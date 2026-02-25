@@ -5,6 +5,7 @@ import com.faculdade.produtos.config.DatabaseConfig;
 import com.faculdade.produtos.config.DatabaseMigration;
 import com.faculdade.produtos.repository.impl.RepositorioPostgreSqlProduto;
 import com.faculdade.produtos.service.ProdutoService;
+import com.faculdade.produtos.web.WebServer;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -35,13 +36,21 @@ public final class Aplicacao {
             RepositorioPostgreSqlProduto repositorio = new RepositorioPostgreSqlProduto(dataSource);
             ProdutoService produtoService = new ProdutoService(repositorio, repositorio);
             
+            // Inicializar servidor web
+            WebServer webServer = new WebServer(produtoService);
+            webServer.iniciar();
+            
             // Inicializar CLI
             ProdutoCLI cli = new ProdutoCLI(produtoService);
             
             System.out.println("✅ Sistema inicializado com sucesso!");
+            System.out.println("🌐 Acesse a interface web em: http://localhost:7000");
             
-            // Iniciar interface
+            // Iniciar interface CLI
             cli.iniciar();
+            
+            // Quando a CLI encerra, parar o servidor web
+            webServer.parar();
             
         } catch (Exception e) {
             System.err.println("❌ Erro fatal ao inicializar sistema: " + e.getMessage());

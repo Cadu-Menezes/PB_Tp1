@@ -1,0 +1,146 @@
+/* ===== ESTILOS GERAIS ===== */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ===== CARDS DE ESTATÍSTICAS ===== */
+
+.card-stats {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-width: 2px;
+}
+
+.card-stats:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== TABELA ===== */
+
+.table th {
+    white-space: nowrap;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Badge de estoque com cores dinâmicas */
+.badge-estoque-zero {
+    background-color: #dc3545;
+}
+
+.badge-estoque-baixo {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-estoque-ok {
+    background-color: #198754;
+}
+
+/* ===== BOTÕES DE AÇÃO NA TABELA ===== */
+
+.btn-acoes {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+}
+
+.btn-group-acoes {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+/* ===== ALERTAS ===== */
+
+#alertas-container {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 420px;
+    width: 100%;
+}
+
+#alertas-container .alert {
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ===== MODAL ===== */
+
+.modal-header {
+    border-radius: 0;
+}
+
+/* ===== NAVBAR ===== */
+
+.navbar-brand i {
+    margin-right: 6px;
+}
+
+.nav-link {
+    transition: background-color 0.2s;
+    border-radius: 4px;
+    margin: 0 2px;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+@media (max-width: 768px) {
+    .btn-group-acoes {
+        flex-direction: column;
+    }
+    
+    #alertas-container {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .card-stats {
+        margin-bottom: 10px;
+    }
+}
+
+/* ===== LOADING SPINNER ===== */
+
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+}
+
+/* ===== PREÇO FORMATADO ===== */
+
+.preco-valor {
+    font-weight: 600;
+    color: #198754;
+}
+
+/* ===== MENSAGEM VAZIA ===== */
+
+#msg-lista-vazia {
+    background-color: #fff;
+    border-radius: 8px;
+    border: 2px dashed #dee2e6;
+}

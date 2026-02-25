@@ -1,5 +1,6 @@
 C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\model\Produto.java
 C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\exception\ProdutoNaoEncontradoException.java
+C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\web\ProdutoController.java
 C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\exception\ProductException.java
 C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\Aplicacao.java
 C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\repository\RepositorioComandoProduto.java
@@ -10,6 +11,7 @@ C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\model\Ca
 C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\model\Nome.java
 C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\model\Preco.java
 C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\exception\ProdutoJaExisteException.java
+C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\web\WebServer.java
 C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\exception\ExcecaoProduto.java
 C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\model\ProdutoId.java
 C:\Users\Dwith\Desktop\Cadu\PB_Tp1\src\main\java\com\faculdade\produtos\config\DatabaseMigration.java
