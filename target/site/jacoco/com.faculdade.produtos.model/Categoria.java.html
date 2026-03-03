@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Categoria.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Sistema CRUD de Produtos</a> &gt; <a href="index.source.html" class="el_package">com.faculdade.produtos.model</a> &gt; <span class="el_source">Categoria.java</span></div><h1>Categoria.java</h1><pre class="source lang-java linenums">package com.faculdade.produtos.model;
+
+/*
+    Enum para categorias de produtos.
+    Implementa switch statements exaustivos conforme requisitos.
+*/
+<span class="fc" id="L7">public enum Categoria {</span>
+<span class="fc" id="L8">    ELETRONICOS(&quot;Eletrônicos&quot;, &quot;Produtos eletrônicos e tecnológicos&quot;),</span>
+<span class="fc" id="L9">    ROUPAS(&quot;Roupas&quot;, &quot;Vestuário e acessórios&quot;),</span>
+<span class="fc" id="L10">    LIVROS(&quot;Livros&quot;, &quot;Livros e material educacional&quot;),</span>
+<span class="fc" id="L11">    CASA_E_JARDIM(&quot;Casa e Jardim&quot;, &quot;Produtos para casa e jardim&quot;),</span>
+<span class="fc" id="L12">    ESPORTES(&quot;Esportes&quot;, &quot;Equipamentos esportivos e fitness&quot;),</span>
+<span class="fc" id="L13">    BELEZA(&quot;Beleza&quot;, &quot;Produtos de beleza e cuidados pessoais&quot;),</span>
+<span class="fc" id="L14">    ALIMENTACAO(&quot;Alimentação&quot;, &quot;Alimentos e bebidas&quot;),</span>
+<span class="fc" id="L15">    BRINQUEDOS(&quot;Brinquedos&quot;, &quot;Brinquedos e jogos&quot;),</span>
+<span class="fc" id="L16">    FERRAMENTAS(&quot;Ferramentas&quot;, &quot;Ferramentas e equipamentos&quot;),</span>
+<span class="fc" id="L17">    OUTROS(&quot;Outros&quot;, &quot;Outras categorias&quot;);</span>
+
+    private final String nomeExibicao;
+    private final String descricao;
+
+<span class="fc" id="L22">    Categoria(String nomeExibicao, String descricao) {</span>
+<span class="fc" id="L23">        this.nomeExibicao = nomeExibicao;</span>
+<span class="fc" id="L24">        this.descricao = descricao;</span>
+<span class="fc" id="L25">    }</span>
+
+    public String getNomeExibicao() {
+<span class="fc" id="L28">        return nomeExibicao;</span>
+    }
+
+    public String getDescricao() {
+<span class="fc" id="L32">        return descricao;</span>
+    }
+
+    /*
+        Converte string para categoria.
+        Implementa tratamento exaustivo sem default.
+    */
+    public static Categoria deString(String valor) {
+<span class="pc bpc" id="L40" title="2 of 4 branches missed.">        if (valor == null || valor.trim().isEmpty()) {</span>
+<span class="nc" id="L41">            throw new IllegalArgumentException(&quot;Valor da categoria não pode ser nulo ou vazio&quot;);</span>
+        }
+
+<span class="fc" id="L44">        String valorNormalizado = valor.trim().toUpperCase();</span>
+        
+        // Switch exaustivo sem default para garantir tratamento explícito
+<span class="pc bpc" id="L47" title="1 of 11 branches missed.">        switch (valorNormalizado) {</span>
+            case &quot;ELETRONICOS&quot;: case &quot;ELETRÔNICOS&quot;: case &quot;ELECTRONICS&quot;:
+<span class="fc" id="L49">                return ELETRONICOS;</span>
+            case &quot;ROUPAS&quot;: case &quot;CLOTHING&quot;: case &quot;CLOTHES&quot;:
+<span class="fc" id="L51">                return ROUPAS;</span>
+            case &quot;LIVROS&quot;: case &quot;BOOKS&quot;:
+<span class="fc" id="L53">                return LIVROS;</span>
+            case &quot;CASA_E_JARDIM&quot;: case &quot;CASA E JARDIM&quot;: case &quot;HOME_AND_GARDEN&quot;: case &quot;HOME&quot;:
+<span class="fc" id="L55">                return CASA_E_JARDIM;</span>
+            case &quot;ESPORTES&quot;: case &quot;SPORTS&quot;:
+<span class="fc" id="L57">                return ESPORTES;</span>
+            case &quot;BELEZA&quot;: case &quot;BEAUTY&quot;:
+<span class="fc" id="L59">                return BELEZA;</span>
+            case &quot;ALIMENTACAO&quot;: case &quot;ALIMENTAÇÃO&quot;: case &quot;FOOD&quot;:
+<span class="fc" id="L61">                return ALIMENTACAO;</span>
+            case &quot;BRINQUEDOS&quot;: case &quot;TOYS&quot;:
+<span class="fc" id="L63">                return BRINQUEDOS;</span>
+            case &quot;FERRAMENTAS&quot;: case &quot;TOOLS&quot;:
+<span class="fc" id="L65">                return FERRAMENTAS;</span>
+            case &quot;OUTROS&quot;: case &quot;OTHER&quot;: case &quot;OTHERS&quot;:
+<span class="fc" id="L67">                return OUTROS;</span>
+        }
+        
+<span class="nc" id="L70">        throw new IllegalArgumentException(&quot;Categoria desconhecida: &quot; + valor);</span>
+    }
+
+    /*
+        Retorna categoria formatada para exibição.
+        Implementa switch exaustivo.
+    */
+    public String formatarParaExibicao() {
+<span class="nc bnc" id="L78" title="All 11 branches missed.">        switch (this) {</span>
+<span class="nc" id="L79">            case ELETRONICOS: return &quot;📱 &quot; + nomeExibicao;</span>
+<span class="nc" id="L80">            case ROUPAS: return &quot;👕 &quot; + nomeExibicao;</span>
+<span class="nc" id="L81">            case LIVROS: return &quot;📚 &quot; + nomeExibicao;</span>
+<span class="nc" id="L82">            case CASA_E_JARDIM: return &quot;🏠 &quot; + nomeExibicao;</span>
+<span class="nc" id="L83">            case ESPORTES: return &quot;⚽ &quot; + nomeExibicao;</span>
+<span class="nc" id="L84">            case BELEZA: return &quot;💄 &quot; + nomeExibicao;</span>
+<span class="nc" id="L85">            case ALIMENTACAO: return &quot;🍎 &quot; + nomeExibicao;</span>
+<span class="nc" id="L86">            case BRINQUEDOS: return &quot;🧸 &quot; + nomeExibicao;</span>
+<span class="nc" id="L87">            case FERRAMENTAS: return &quot;🔧 &quot; + nomeExibicao;</span>
+<span class="nc" id="L88">            case OUTROS: return &quot;📦 &quot; + nomeExibicao;</span>
+        }
+        
+        // Este ponto nunca deve ser alcançado se todos os casos forem tratados
+<span class="nc" id="L92">        throw new IllegalStateException(&quot;Categoria não tratada: &quot; + this);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L97">        return nomeExibicao;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

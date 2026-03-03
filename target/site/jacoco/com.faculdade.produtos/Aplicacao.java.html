@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Aplicacao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Sistema CRUD de Produtos</a> &gt; <a href="index.source.html" class="el_package">com.faculdade.produtos</a> &gt; <span class="el_source">Aplicacao.java</span></div><h1>Aplicacao.java</h1><pre class="source lang-java linenums">package com.faculdade.produtos;
+
+import com.faculdade.produtos.cli.ProdutoCLI;
+import com.faculdade.produtos.config.DatabaseConfig;
+import com.faculdade.produtos.config.DatabaseMigration;
+import com.faculdade.produtos.repository.impl.RepositorioPostgreSqlProduto;
+import com.faculdade.produtos.service.ProdutoService;
+import com.faculdade.produtos.web.WebServer;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+
+/*
+    Classe principal da aplicação.
+    Responsável por inicializar o sistema e suas dependências.
+*/
+public final class Aplicacao {
+    
+    private static final String VERSAO_APP = &quot;1.0.0&quot;;
+    private static final String NOME_APP = &quot;Sistema CRUD de Produtos&quot;;
+
+    // Construtor privado para evitar instanciação
+<span class="nc" id="L23">    private Aplicacao() {</span>
+<span class="nc" id="L24">        throw new AssertionError(&quot;Esta classe não deve ser instanciada&quot;);</span>
+    }
+
+    public static void main(String[] args) {
+<span class="nc" id="L28">        System.out.println(NOME_APP + &quot; v&quot; + VERSAO_APP);</span>
+<span class="nc" id="L29">        System.out.println(&quot;Inicializando sistema...&quot;);</span>
+        
+        try {
+            // Configurar e inicializar banco de dados
+<span class="nc" id="L33">            DataSource dataSource = inicializarBancoDados();</span>
+            
+            // Configurar dependências
+<span class="nc" id="L36">            RepositorioPostgreSqlProduto repositorio = new RepositorioPostgreSqlProduto(dataSource);</span>
+<span class="nc" id="L37">            ProdutoService produtoService = new ProdutoService(repositorio, repositorio);</span>
+            
+            // Inicializar servidor web
+<span class="nc" id="L40">            WebServer webServer = new WebServer(produtoService);</span>
+<span class="nc" id="L41">            webServer.iniciar();</span>
+            
+            // Inicializar CLI
+<span class="nc" id="L44">            ProdutoCLI cli = new ProdutoCLI(produtoService);</span>
+            
+<span class="nc" id="L46">            System.out.println(&quot;✅ Sistema inicializado com sucesso!&quot;);</span>
+<span class="nc" id="L47">            System.out.println(&quot;🌐 Acesse a interface web em: http://localhost:7000&quot;);</span>
+            
+            // Iniciar interface CLI
+<span class="nc" id="L50">            cli.iniciar();</span>
+            
+            // Quando a CLI encerra, parar o servidor web
+<span class="nc" id="L53">            webServer.parar();</span>
+            
+<span class="nc" id="L55">        } catch (Exception e) {</span>
+<span class="nc" id="L56">            System.err.println(&quot;❌ Erro fatal ao inicializar sistema: &quot; + e.getMessage());</span>
+<span class="nc" id="L57">            e.printStackTrace();</span>
+<span class="nc" id="L58">            System.exit(1);</span>
+<span class="nc" id="L59">        }</span>
+<span class="nc" id="L60">    }</span>
+
+    /*
+        Inicializa e configura o banco de dados.
+    */
+    private static DataSource inicializarBancoDados() throws SQLException {
+<span class="nc" id="L66">        System.out.println(&quot;Configurando banco de dados...&quot;);</span>
+        
+        // Verificar se o banco existe, criar se necessário
+<span class="nc" id="L69">        DatabaseConfig.ensureDatabaseExists();</span>
+        
+        // Criar DataSource
+<span class="nc" id="L72">        DataSource dataSource = DatabaseConfig.createDefaultDataSource();</span>
+        
+        // Executar migrações
+<span class="nc" id="L75">        DatabaseMigration.migrate(dataSource);</span>
+        
+<span class="nc" id="L77">        System.out.println(&quot;✅ Banco de dados configurado.&quot;);</span>
+        
+<span class="nc" id="L79">        return dataSource;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

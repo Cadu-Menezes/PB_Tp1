@@ -4,9 +4,11 @@ com\faculdade\produtos\exception\ProdutoJaExisteException.class
 com\faculdade\produtos\Aplicacao.class
 com\faculdade\produtos\repository\RepositorioConsultaProduto.class
 com\faculdade\produtos\model\Produto$Builder.class
+com\faculdade\produtos\web\ProdutoController.class
 com\faculdade\produtos\model\Produto.class
 com\faculdade\produtos\model\Categoria$1.class
 com\faculdade\produtos\service\ProdutoService.class
+com\faculdade\produtos\web\WebServer$1.class
 com\faculdade\produtos\exception\ProductException.class
 com\faculdade\produtos\repository\RepositorioComandoProduto.class
 com\faculdade\produtos\model\Preco.class
@@ -18,6 +20,7 @@ com\faculdade\produtos\cli\ProdutoCLI.class
 com\faculdade\produtos\model\ProdutoId.class
 com\faculdade\produtos\exception\ProdutoNaoEncontradoException.class
 com\faculdade\produtos\exception\ProductException$ErrorCategory.class
+com\faculdade\produtos\web\WebServer.class
 com\faculdade\produtos\repository\impl\RepositorioPostgreSqlProduto.class
 com\faculdade\produtos\model\Descricao.class
 com\faculdade\produtos\model\Nome.class

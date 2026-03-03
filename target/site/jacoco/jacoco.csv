@@ -1,0 +1,26 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Sistema CRUD de Produtos,com.faculdade.produtos.service,ProdutoService,158,141,21,11,34,37,23,12,7,12
+Sistema CRUD de Produtos,com.faculdade.produtos.config,DatabaseConfig,232,30,10,0,60,9,9,1,4,1
+Sistema CRUD de Produtos,com.faculdade.produtos.config,DatabaseMigration,0,43,0,0,0,16,0,4,0,4
+Sistema CRUD de Produtos,com.faculdade.produtos.repository.impl,RepositorioPostgreSqlProduto,199,372,7,9,45,88,8,16,3,13
+Sistema CRUD de Produtos,com.faculdade.produtos.web,ProdutoController,334,453,4,4,66,100,6,15,3,14
+Sistema CRUD de Produtos,com.faculdade.produtos.web,WebServer.new JsonMapper() {...},6,15,0,0,1,2,1,2,1,2
+Sistema CRUD de Produtos,com.faculdade.produtos.web,WebServer,8,204,0,0,3,35,2,10,2,10
+Sistema CRUD de Produtos,com.faculdade.produtos.exception,ProdutoJaExisteException,21,0,0,0,6,0,4,0,4,0
+Sistema CRUD de Produtos,com.faculdade.produtos.exception,ExcecaoBancoDados,44,0,0,0,9,0,5,0,5,0
+Sistema CRUD de Produtos,com.faculdade.produtos.exception,EstoqueInsuficienteException,41,0,0,0,10,0,6,0,6,0
+Sistema CRUD de Produtos,com.faculdade.produtos.exception,ProdutoNaoEncontradoException,21,0,0,0,6,0,4,0,4,0
+Sistema CRUD de Produtos,com.faculdade.produtos.exception,ExcecaoProduto,9,0,0,0,4,0,2,0,2,0
+Sistema CRUD de Produtos,com.faculdade.produtos.exception,ProductException.ErrorCategory,27,0,0,0,5,0,1,0,1,0
+Sistema CRUD de Produtos,com.faculdade.produtos.exception,ProductException,9,0,0,0,4,0,2,0,2,0
+Sistema CRUD de Produtos,com.faculdade.produtos.exception,ExcecaoProduto.CategoriaErro,27,0,0,0,5,0,1,0,1,0
+Sistema CRUD de Produtos,com.faculdade.produtos,Aplicacao,73,0,0,0,26,0,3,0,3,0
+Sistema CRUD de Produtos,com.faculdade.produtos.model,Produto,50,136,6,0,6,50,6,13,3,13
+Sistema CRUD de Produtos,com.faculdade.produtos.model,Nome,52,54,7,7,8,15,9,5,2,5
+Sistema CRUD de Produtos,com.faculdade.produtos.model,Descricao,57,27,8,2,10,9,9,4,4,4
+Sistema CRUD de Produtos,com.faculdade.produtos.model,Produto.Builder,40,72,8,8,0,27,8,10,0,10
+Sistema CRUD de Produtos,com.faculdade.produtos.model,QuantidadeEstoque,102,20,17,1,17,7,17,4,8,4
+Sistema CRUD de Produtos,com.faculdade.produtos.model,Categoria,65,138,14,12,15,30,15,14,2,5
+Sistema CRUD de Produtos,com.faculdade.produtos.model,Preco,126,30,12,2,22,9,18,5,11,5
+Sistema CRUD de Produtos,com.faculdade.produtos.model,ProdutoId,44,28,6,0,8,7,6,5,3,5
+Sistema CRUD de Produtos,com.faculdade.produtos.cli,ProdutoCLI,1029,0,52,0,275,0,58,0,27,0

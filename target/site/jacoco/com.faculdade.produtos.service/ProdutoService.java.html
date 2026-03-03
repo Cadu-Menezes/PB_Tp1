@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProdutoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Sistema CRUD de Produtos</a> &gt; <a href="index.source.html" class="el_package">com.faculdade.produtos.service</a> &gt; <span class="el_source">ProdutoService.java</span></div><h1>ProdutoService.java</h1><pre class="source lang-java linenums">package com.faculdade.produtos.service;
+
+import com.faculdade.produtos.exception.*;
+import com.faculdade.produtos.model.*;
+import com.faculdade.produtos.repository.RepositorioComandoProduto;
+import com.faculdade.produtos.repository.RepositorioConsultaProduto;
+
+import java.util.List;
+import java.util.Objects;
+
+/*
+    Serviço para gerenciamento de produtos.
+    regras de negócio e coordena operações entre repositories.
+*/
+public final class ProdutoService {
+    
+    private final RepositorioComandoProduto repositorioComando;
+    private final RepositorioConsultaProduto repositorioConsulta;
+
+    public ProdutoService(RepositorioComandoProduto repositorioComando, 
+<span class="fc" id="L21">                         RepositorioConsultaProduto repositorioConsulta) {</span>
+<span class="fc" id="L22">        this.repositorioComando = Objects.requireNonNull(repositorioComando, &quot;Repositório de comando não pode ser nulo&quot;);</span>
+<span class="fc" id="L23">        this.repositorioConsulta = Objects.requireNonNull(repositorioConsulta, &quot;Repositório de consulta não pode ser nulo&quot;);</span>
+<span class="fc" id="L24">    }</span>
+
+    // Command operations (CQS - Commands)
+
+    /*
+        Cria um novo produto.
+        Valida regras de negócio antes da criação.
+    */
+    public ProdutoId criarProduto(Nome nome, Descricao descricao, Preco preco, 
+                                 Categoria categoria, QuantidadeEstoque quantidadeEstoque) 
+            throws ProdutoJaExisteException, ExcecaoBancoDados {
+        
+<span class="fc" id="L36">        validarRegrasDeNegocio(nome, descricao, preco, quantidadeEstoque);</span>
+        
+        // Regra de negócio: nome único
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        if (repositorioConsulta.existePorNome(nome)) {</span>
+<span class="nc" id="L40">            throw new ProdutoJaExisteException(nome);</span>
+        }
+        
+<span class="fc" id="L43">        Produto produto = Produto.criar(nome, descricao, preco, categoria, quantidadeEstoque);</span>
+<span class="fc" id="L44">        repositorioComando.salvar(produto);</span>
+        
+<span class="fc" id="L46">        return produto.getId();</span>
+    }
+
+    /*
+        Atualiza um produto existente.
+        Valida regras de negócio e existência do produto.
+    */
+    public void atualizarProduto(ProdutoId produtoId, Nome nome, Descricao descricao, 
+                            Preco preco, Categoria categoria, QuantidadeEstoque quantidadeEstoque) 
+            throws ProdutoNaoEncontradoException, ProdutoJaExisteException, ExcecaoBancoDados {
+        
+<span class="fc" id="L57">        validarRegrasDeNegocio(nome, descricao, preco, quantidadeEstoque);</span>
+        
+<span class="fc" id="L59">        Produto produtoExistente = encontrarProdutoPorId(produtoId);</span>
+        
+        // Regra de negócio: nome único (exceto para o próprio produto)
+<span class="pc bpc" id="L62" title="2 of 4 branches missed.">        if (!produtoExistente.getNome().equals(nome) &amp;&amp; repositorioConsulta.existePorNome(nome)) {</span>
+<span class="nc" id="L63">            throw new ProdutoJaExisteException(nome);</span>
+        }
+        
+<span class="fc" id="L66">        Produto produtoAtualizado = produtoExistente.atualizar(nome, descricao, preco, categoria, quantidadeEstoque);</span>
+<span class="fc" id="L67">        repositorioComando.atualizar(produtoAtualizado);</span>
+<span class="fc" id="L68">    }</span>
+
+    
+    //    Remove um produto do sistema.
+    public void excluirProduto(ProdutoId produtoId) throws ProdutoNaoEncontradoException, ExcecaoBancoDados {
+        // Verifica se produto existe antes de deletar
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">        if (!repositorioConsulta.existePorId(produtoId)) {</span>
+<span class="nc" id="L75">            throw new ProdutoNaoEncontradoException(produtoId);</span>
+        }
+        
+<span class="fc" id="L78">        repositorioComando.excluirPorId(produtoId);</span>
+<span class="fc" id="L79">    }</span>
+
+    /*
+        Atualiza apenas o estoque de um produto.
+        Operação específica para gerenciamento de estoque.
+    */
+    public void atualizarEstoque(ProdutoId produtoId, QuantidadeEstoque novaQuantidade) 
+            throws ProdutoNaoEncontradoException, ExcecaoBancoDados {
+        
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        if (novaQuantidade == null) {</span>
+<span class="nc" id="L89">            throw new IllegalArgumentException(&quot;Quantidade em estoque não pode ser nula&quot;);</span>
+        }
+        
+<span class="fc" id="L92">        Produto produtoExistente = encontrarProdutoPorId(produtoId);</span>
+<span class="fc" id="L93">        Produto produtoAtualizado = produtoExistente.atualizarEstoque(novaQuantidade);</span>
+<span class="fc" id="L94">        repositorioComando.atualizar(produtoAtualizado);</span>
+<span class="fc" id="L95">    }</span>
+
+    
+    //    Reduz estoque de um produto (para simulação de venda).
+    public void reduzirEstoque(ProdutoId produtoId, QuantidadeEstoque quantidadeAReduzir) 
+            throws ProdutoNaoEncontradoException, EstoqueInsuficienteException, ExcecaoBancoDados {
+        
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (quantidadeAReduzir == null) {</span>
+<span class="nc" id="L103">            throw new IllegalArgumentException(&quot;Quantidade a reduzir não pode ser nula&quot;);</span>
+        }
+        
+<span class="nc" id="L106">        Produto produtoExistente = encontrarProdutoPorId(produtoId);</span>
+        
+        // Regra de negócio: verificar estoque suficiente
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (produtoExistente.getQuantidadeEstoque().getValue() &lt; quantidadeAReduzir.getValue()) {</span>
+<span class="nc" id="L110">            throw new EstoqueInsuficienteException(produtoId, produtoExistente.getQuantidadeEstoque(), quantidadeAReduzir);</span>
+        }
+        
+<span class="nc" id="L113">        QuantidadeEstoque novaQuantidade = produtoExistente.getQuantidadeEstoque().subtrair(quantidadeAReduzir.getValue());</span>
+<span class="nc" id="L114">        Produto produtoAtualizado = produtoExistente.atualizarEstoque(novaQuantidade);</span>
+<span class="nc" id="L115">        repositorioComando.atualizar(produtoAtualizado);</span>
+<span class="nc" id="L116">    }</span>
+
+    
+    //    Aumenta estoque de um produto (para reposição).
+    public void aumentarEstoque(ProdutoId produtoId, QuantidadeEstoque quantidadeAAdicionar) 
+            throws ProdutoNaoEncontradoException, ExcecaoBancoDados {
+        
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        if (quantidadeAAdicionar == null) {</span>
+<span class="nc" id="L124">            throw new IllegalArgumentException(&quot;Quantidade a adicionar não pode ser nula&quot;);</span>
+        }
+        
+<span class="nc" id="L127">        Produto produtoExistente = encontrarProdutoPorId(produtoId);</span>
+<span class="nc" id="L128">        QuantidadeEstoque novaQuantidade = produtoExistente.getQuantidadeEstoque().adicionar(quantidadeAAdicionar.getValue());</span>
+<span class="nc" id="L129">        Produto produtoAtualizado = produtoExistente.atualizarEstoque(novaQuantidade);</span>
+<span class="nc" id="L130">        repositorioComando.atualizar(produtoAtualizado);</span>
+<span class="nc" id="L131">    }</span>
+
+    // Query operations (CQS - Queries)
+
+    
+    //Busca produto por ID.
+    public Produto obterProduto(ProdutoId produtoId) throws ProdutoNaoEncontradoException, ExcecaoBancoDados {
+<span class="fc" id="L138">        return encontrarProdutoPorId(produtoId);</span>
+    }
+
+
+    //Busca produto por nome.    
+    public Produto obterProduto(Nome nome) throws ProdutoNaoEncontradoException, ExcecaoBancoDados {
+<span class="nc" id="L144">        return repositorioConsulta.buscarPorNome(nome)</span>
+<span class="nc" id="L145">                .orElseThrow(() -&gt; new ProdutoNaoEncontradoException(ProdutoId.gerar())); // Hack: ProdutoNaoEncontradoException deveria aceitar nome</span>
+    }
+
+    
+    // Lista todos os produtos.
+    public List&lt;Produto&gt; obterTodosProdutos() throws ExcecaoBancoDados {
+<span class="fc" id="L151">        return repositorioConsulta.buscarTodos();</span>
+    }
+
+    
+    // Lista produtos por categoria.
+    public List&lt;Produto&gt; obterProdutosPorCategoria(Categoria categoria) throws ExcecaoBancoDados {
+<span class="nc bnc" id="L157" title="All 2 branches missed.">        if (categoria == null) {</span>
+<span class="nc" id="L158">            throw new IllegalArgumentException(&quot;Categoria não pode ser nula&quot;);</span>
+        }
+<span class="nc" id="L160">        return repositorioConsulta.buscarPorCategoria(categoria);</span>
+    }
+
+    
+    // Lista produtos sem estoque. 
+    public List&lt;Produto&gt; obterProdutosSemEstoque() throws ExcecaoBancoDados {
+<span class="fc" id="L166">        return repositorioConsulta.buscarProdutosSemEstoque();</span>
+    }
+
+    
+    // Lista produtos com estoque baixo.
+    public List&lt;Produto&gt; obterProdutosComEstoqueBaixo(int limite) throws ExcecaoBancoDados {
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        if (limite &lt; 0) {</span>
+<span class="nc" id="L173">            throw new IllegalArgumentException(&quot;Limite deve ser não-negativo&quot;);</span>
+        }
+<span class="fc" id="L175">        return repositorioConsulta.buscarProdutosEstoqueBaixo(limite);</span>
+    }
+
+ 
+    // Conta total de produtos.
+ 
+    public long obterTotalDeProdutos() throws ExcecaoBancoDados {
+<span class="fc" id="L182">        return repositorioConsulta.contar();</span>
+    }
+
+    
+    // Verifica se produto existe pelo nome.
+    public boolean produtoExistePorNome(Nome nome) throws ExcecaoBancoDados {
+<span class="nc bnc" id="L188" title="All 2 branches missed.">        if (nome == null) {</span>
+<span class="nc" id="L189">            throw new IllegalArgumentException(&quot;Nome não pode ser nulo&quot;);</span>
+        }
+<span class="nc" id="L191">        return repositorioConsulta.existePorNome(nome);</span>
+    }
+
+    // Helper methods
+
+    private Produto encontrarProdutoPorId(ProdutoId produtoId) throws ProdutoNaoEncontradoException, ExcecaoBancoDados {
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">        if (produtoId == null) {</span>
+<span class="nc" id="L198">            throw new IllegalArgumentException(&quot;ID do produto não pode ser nulo&quot;);</span>
+        }
+        
+<span class="fc" id="L201">        return repositorioConsulta.buscarPorId(produtoId)</span>
+<span class="pc" id="L202">                .orElseThrow(() -&gt; new ProdutoNaoEncontradoException(produtoId));</span>
+    }
+
+    private void validarRegrasDeNegocio(Nome nome, Descricao descricao, Preco preco, QuantidadeEstoque quantidadeEstoque) {
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        if (nome == null) {</span>
+<span class="nc" id="L207">            throw new IllegalArgumentException(&quot;Nome do produto não pode ser nulo&quot;);</span>
+        }
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">        if (descricao == null) {</span>
+<span class="nc" id="L210">            throw new IllegalArgumentException(&quot;Descrição do produto não pode ser nula&quot;);</span>
+        }
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">        if (preco == null) {</span>
+<span class="nc" id="L213">            throw new IllegalArgumentException(&quot;Preço do produto não pode ser nulo&quot;);</span>
+        }
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">        if (quantidadeEstoque == null) {</span>
+<span class="nc" id="L216">            throw new IllegalArgumentException(&quot;Quantidade em estoque do produto não pode ser nula&quot;);</span>
+        }
+        
+        // Regras de negócio específicas podem ser adicionadas aqui
+        // Por exemplo: preço mínimo, categorias permitidas, etc.
+<span class="fc" id="L221">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,16 @@
+com\faculdade\produtos\cli\ProdutoCLITest.class
+com\faculdade\produtos\selenium\paginas\ModalEstoque.class
+com\faculdade\produtos\selenium\paginas\PaginaPrincipal.class
+com\faculdade\produtos\model\PrecoTest.class
+com\faculdade\produtos\selenium\paginas\ModalProduto.class
+com\faculdade\produtos\model\ProdutoTest.class
+com\faculdade\produtos\selenium\ProdutoCRUDSeleniumTest.class
+com\faculdade\produtos\service\ProdutoServiceIntegrationTest.class
+com\faculdade\produtos\model\NomeTest.class
+com\faculdade\produtos\AplicacaoTest.class
+com\faculdade\produtos\model\ProdutoDomainProperties.class
+com\faculdade\produtos\model\PrecoProperties.class
+com\faculdade\produtos\selenium\paginas\ModalExcluir.class
+com\faculdade\produtos\selenium\ProdutoParametrizadoSeleniumTest.class
+com\faculdade\produtos\model\NomeProperties.class
+com\faculdade\produtos\selenium\BaseSeleniumTest.class

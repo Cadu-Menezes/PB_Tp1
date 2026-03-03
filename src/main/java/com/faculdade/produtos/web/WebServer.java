@@ -20,9 +20,15 @@ public final class WebServer {
 
     private final Javalin app;
     private final ProdutoController controller;
+    private final int porta;
 
     public WebServer(ProdutoService produtoService) {
+        this(produtoService, PORTA_PADRAO);
+    }
+
+    public WebServer(ProdutoService produtoService, int porta) {
         this.controller = new ProdutoController(produtoService);
+        this.porta = porta;
         this.app = configurarServidor();
         registrarRotas();
     }
@@ -88,8 +94,8 @@ public final class WebServer {
         Inicia o servidor na porta configurada.
     */
     public void iniciar() {
-        app.start(PORTA_PADRAO);
-        System.out.println("🌐 Servidor web iniciado em http://localhost:" + PORTA_PADRAO);
+        app.start(porta);
+        System.out.println("🌐 Servidor web iniciado em http://localhost:" + porta);
     }
 
     /*
@@ -101,6 +107,6 @@ public final class WebServer {
     }
 
     public int getPorta() {
-        return PORTA_PADRAO;
+        return porta;
     }
 }

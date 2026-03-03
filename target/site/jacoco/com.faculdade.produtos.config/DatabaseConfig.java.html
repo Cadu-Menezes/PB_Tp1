@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DatabaseConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Sistema CRUD de Produtos</a> &gt; <a href="index.source.html" class="el_package">com.faculdade.produtos.config</a> &gt; <span class="el_source">DatabaseConfig.java</span></div><h1>DatabaseConfig.java</h1><pre class="source lang-java linenums">package com.faculdade.produtos.config;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.SQLException;
+
+/*
+    Configuração do banco de dados PostgreSQL.
+    Utiliza HikariCP para pool de conexões.
+*/
+public final class DatabaseConfig {
+    
+    // Configurações padrão
+    private static final String DEFAULT_HOST = &quot;localhost&quot;;
+    private static final String DEFAULT_PORT = &quot;5432&quot;;
+    private static final String DEFAULT_DATABASE = &quot;produtos_db&quot;;
+    private static final String DEFAULT_USERNAME = &quot;postgres&quot;;
+    private static final String DEFAULT_PASSWORD = &quot;rj21DWITH052@22&quot;;
+    
+    // Configurações do pool
+    private static final int DEFAULT_MINIMUM_IDLE = 2;
+    private static final int DEFAULT_MAXIMUM_POOL_SIZE = 10;
+    private static final long DEFAULT_MAX_LIFETIME = 300000; // 5 minutos
+    private static final long DEFAULT_CONNECTION_TIMEOUT = 30000; // 30 segundos
+
+    private DatabaseConfig() {
+        // Utility class - não deve ser instanciada
+    }
+
+    /*
+        Verifica se o banco de dados existe e cria caso não exista.
+        Conecta ao banco padrão 'postgres' para executar a verificação.
+    */
+    public static void ensureDatabaseExists() {
+<span class="nc" id="L40">        String host = getProperty(&quot;DB_HOST&quot;, DEFAULT_HOST);</span>
+<span class="nc" id="L41">        String port = getProperty(&quot;DB_PORT&quot;, DEFAULT_PORT);</span>
+<span class="nc" id="L42">        String database = getProperty(&quot;DB_NAME&quot;, DEFAULT_DATABASE);</span>
+<span class="nc" id="L43">        String username = getProperty(&quot;DB_USER&quot;, DEFAULT_USERNAME);</span>
+<span class="nc" id="L44">        String password = getProperty(&quot;DB_PASSWORD&quot;, DEFAULT_PASSWORD);</span>
+
+        // Conecta ao banco 'postgres' (sempre existe) para verificar/criar o banco alvo
+<span class="nc" id="L47">        HikariConfig config = new HikariConfig();</span>
+<span class="nc" id="L48">        config.setJdbcUrl(String.format(&quot;jdbc:postgresql://%s:%s/postgres&quot;, host, port));</span>
+<span class="nc" id="L49">        config.setUsername(username);</span>
+<span class="nc" id="L50">        config.setPassword(password);</span>
+<span class="nc" id="L51">        config.setDriverClassName(&quot;org.postgresql.Driver&quot;);</span>
+<span class="nc" id="L52">        config.setMaximumPoolSize(1);</span>
+<span class="nc" id="L53">        config.setMinimumIdle(1);</span>
+
+<span class="nc" id="L55">        try (HikariDataSource ds = new HikariDataSource(config);</span>
+<span class="nc" id="L56">             Connection conn = ds.getConnection();</span>
+<span class="nc" id="L57">             ResultSet rs = conn.createStatement().executeQuery(</span>
+                     &quot;SELECT 1 FROM pg_database WHERE datname = '&quot; + database + &quot;'&quot;)) {
+
+<span class="nc bnc" id="L60" title="All 2 branches missed.">            if (!rs.next()) {</span>
+<span class="nc" id="L61">                System.out.println(&quot;Banco '&quot; + database + &quot;' não encontrado. Criando...&quot;);</span>
+<span class="nc" id="L62">                try (Statement stmt = conn.createStatement()) {</span>
+<span class="nc" id="L63">                    stmt.execute(&quot;CREATE DATABASE &quot; + database);</span>
+                }
+<span class="nc" id="L65">                System.out.println(&quot;✅ Banco '&quot; + database + &quot;' criado com sucesso!&quot;);</span>
+            } else {
+<span class="nc" id="L67">                System.out.println(&quot;Banco '&quot; + database + &quot;' encontrado.&quot;);</span>
+            }
+<span class="nc" id="L69">        } catch (SQLException e) {</span>
+<span class="nc" id="L70">            System.err.println(&quot;⚠ Não foi possível verificar/criar o banco: &quot; + e.getMessage());</span>
+<span class="nc" id="L71">        }</span>
+<span class="nc" id="L72">    }</span>
+
+    /*
+        Cria DataSource com configurações padrão.
+    */
+    public static DataSource createDefaultDataSource() {
+<span class="nc" id="L78">        return createDataSource(</span>
+<span class="nc" id="L79">                getProperty(&quot;DB_HOST&quot;, DEFAULT_HOST),</span>
+<span class="nc" id="L80">                getProperty(&quot;DB_PORT&quot;, DEFAULT_PORT),</span>
+<span class="nc" id="L81">                getProperty(&quot;DB_NAME&quot;, DEFAULT_DATABASE),</span>
+<span class="nc" id="L82">                getProperty(&quot;DB_USER&quot;, DEFAULT_USERNAME),</span>
+<span class="nc" id="L83">                getProperty(&quot;DB_PASSWORD&quot;, DEFAULT_PASSWORD)</span>
+        );
+    }
+
+    /*
+        Cria DataSource com configurações customizadas.
+    */
+    public static DataSource createDataSource(String host, String port, String database, 
+                                            String username, String password) {
+<span class="nc" id="L92">        HikariConfig config = new HikariConfig();</span>
+        
+        // JDBC URL
+<span class="nc" id="L95">        String jdbcUrl = String.format(&quot;jdbc:postgresql://%s:%s/%s&quot;, host, port, database);</span>
+<span class="nc" id="L96">        config.setJdbcUrl(jdbcUrl);</span>
+<span class="nc" id="L97">        config.setUsername(username);</span>
+<span class="nc" id="L98">        config.setPassword(password);</span>
+        
+        // Driver
+<span class="nc" id="L101">        config.setDriverClassName(&quot;org.postgresql.Driver&quot;);</span>
+        
+        // Pool settings
+<span class="nc" id="L104">        config.setMinimumIdle(DEFAULT_MINIMUM_IDLE);</span>
+<span class="nc" id="L105">        config.setMaximumPoolSize(DEFAULT_MAXIMUM_POOL_SIZE);</span>
+<span class="nc" id="L106">        config.setMaxLifetime(DEFAULT_MAX_LIFETIME);</span>
+<span class="nc" id="L107">        config.setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);</span>
+        
+        // Connection settings
+<span class="nc" id="L110">        config.setAutoCommit(true);</span>
+<span class="nc" id="L111">        config.setConnectionTestQuery(&quot;SELECT 1&quot;);</span>
+        
+        // Performance settings
+<span class="nc" id="L114">        config.addDataSourceProperty(&quot;cachePrepStmts&quot;, &quot;true&quot;);</span>
+<span class="nc" id="L115">        config.addDataSourceProperty(&quot;prepStmtCacheSize&quot;, &quot;250&quot;);</span>
+<span class="nc" id="L116">        config.addDataSourceProperty(&quot;prepStmtCacheSqlLimit&quot;, &quot;2048&quot;);</span>
+<span class="nc" id="L117">        config.addDataSourceProperty(&quot;useServerPrepStmts&quot;, &quot;true&quot;);</span>
+<span class="nc" id="L118">        config.addDataSourceProperty(&quot;useLocalSessionState&quot;, &quot;true&quot;);</span>
+<span class="nc" id="L119">        config.addDataSourceProperty(&quot;rewriteBatchedStatements&quot;, &quot;true&quot;);</span>
+<span class="nc" id="L120">        config.addDataSourceProperty(&quot;cacheResultSetMetadata&quot;, &quot;true&quot;);</span>
+<span class="nc" id="L121">        config.addDataSourceProperty(&quot;elideSetAutoCommits&quot;, &quot;true&quot;);</span>
+<span class="nc" id="L122">        config.addDataSourceProperty(&quot;maintainTimeStats&quot;, &quot;false&quot;);</span>
+        
+<span class="nc" id="L124">        return new HikariDataSource(config);</span>
+    }
+
+    /*
+        Cria DataSource para testes com H2.
+    */
+    public static DataSource createTestDataSource() {
+<span class="fc" id="L131">        HikariConfig config = new HikariConfig();</span>
+        
+<span class="fc" id="L133">        config.setJdbcUrl(&quot;jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1&quot;);</span>
+<span class="fc" id="L134">        config.setDriverClassName(&quot;org.h2.Driver&quot;);</span>
+<span class="fc" id="L135">        config.setUsername(&quot;sa&quot;);</span>
+<span class="fc" id="L136">        config.setPassword(&quot;&quot;);</span>
+        
+<span class="fc" id="L138">        config.setMinimumIdle(1);</span>
+<span class="fc" id="L139">        config.setMaximumPoolSize(5);</span>
+<span class="fc" id="L140">        config.setAutoCommit(true);</span>
+        
+<span class="fc" id="L142">        return new HikariDataSource(config);</span>
+    }
+
+    /*
+        Obtém propriedade do sistema ou variável de ambiente, com fallback para valor padrão.
+    */
+    private static String getProperty(String key, String defaultValue) {
+        // Primeiro tenta propriedade do sistema
+<span class="nc" id="L150">        String value = System.getProperty(key);</span>
+<span class="nc bnc" id="L151" title="All 4 branches missed.">        if (value != null &amp;&amp; !value.trim().isEmpty()) {</span>
+<span class="nc" id="L152">            return value;</span>
+        }
+        
+        // Depois tenta variável de ambiente
+<span class="nc" id="L156">        value = System.getenv(key);</span>
+<span class="nc bnc" id="L157" title="All 4 branches missed.">        if (value != null &amp;&amp; !value.trim().isEmpty()) {</span>
+<span class="nc" id="L158">            return value;</span>
+        }
+        
+        // Por fim, retorna valor padrão
+<span class="nc" id="L162">        return defaultValue;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

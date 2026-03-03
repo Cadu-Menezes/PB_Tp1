@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DatabaseMigration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Sistema CRUD de Produtos</a> &gt; <a href="index.source.html" class="el_package">com.faculdade.produtos.config</a> &gt; <span class="el_source">DatabaseMigration.java</span></div><h1>DatabaseMigration.java</h1><pre class="source lang-java linenums">package com.faculdade.produtos.config;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+/*
+    Gerencia a criação e migração do esquema do banco de dados.
+*/
+public final class DatabaseMigration {
+    
+    private static final String CREATE_PRODUCTS_TABLE = &quot;&quot;&quot;
+        CREATE TABLE IF NOT EXISTS products (
+            id UUID PRIMARY KEY,
+            name VARCHAR(100) NOT NULL UNIQUE,
+            description TEXT NOT NULL,
+            price DECIMAL(10,2) NOT NULL CHECK (price &gt;= 0),
+            category VARCHAR(50) NOT NULL,
+            stock_quantity INTEGER NOT NULL CHECK (stock_quantity &gt;= 0),
+            created_at TIMESTAMP NOT NULL,
+            updated_at TIMESTAMP NOT NULL
+        )
+        &quot;&quot;&quot;;
+    
+    private static final String CREATE_NAME_INDEX = 
+        &quot;CREATE INDEX IF NOT EXISTS idx_products_name ON products(name)&quot;;
+    
+    private static final String CREATE_CATEGORY_INDEX = 
+        &quot;CREATE INDEX IF NOT EXISTS idx_products_category ON products(category)&quot;;
+    
+    private static final String CREATE_STOCK_INDEX = 
+        &quot;CREATE INDEX IF NOT EXISTS idx_products_stock ON products(stock_quantity)&quot;;
+
+    private DatabaseMigration() {
+        // Utility class
+    }
+
+    /*
+        Executa todas as migrações necessárias.
+    */
+    public static void migrate(DataSource dataSource) throws SQLException {
+<span class="fc" id="L43">        try (Connection conn = dataSource.getConnection()) {</span>
+<span class="fc" id="L44">            createTables(conn);</span>
+<span class="fc" id="L45">            createIndexes(conn);</span>
+        }
+<span class="fc" id="L47">    }</span>
+
+    /*
+        Remove todas as tabelas (para testes).
+    */
+    public static void dropAllTables(DataSource dataSource) throws SQLException {
+<span class="fc" id="L53">        try (Connection conn = dataSource.getConnection();</span>
+<span class="fc" id="L54">             Statement stmt = conn.createStatement()) {</span>
+            
+<span class="fc" id="L56">            stmt.execute(&quot;DROP TABLE IF EXISTS products CASCADE&quot;);</span>
+        }
+<span class="fc" id="L58">    }</span>
+
+    private static void createTables(Connection conn) throws SQLException {
+<span class="fc" id="L61">        try (Statement stmt = conn.createStatement()) {</span>
+<span class="fc" id="L62">            stmt.execute(CREATE_PRODUCTS_TABLE);</span>
+        }
+<span class="fc" id="L64">    }</span>
+
+    private static void createIndexes(Connection conn) throws SQLException {
+<span class="fc" id="L67">        try (Statement stmt = conn.createStatement()) {</span>
+<span class="fc" id="L68">            stmt.execute(CREATE_NAME_INDEX);</span>
+<span class="fc" id="L69">            stmt.execute(CREATE_CATEGORY_INDEX);</span>
+<span class="fc" id="L70">            stmt.execute(CREATE_STOCK_INDEX);</span>
+        }
+<span class="fc" id="L72">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Produto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Sistema CRUD de Produtos</a> &gt; <a href="index.source.html" class="el_package">com.faculdade.produtos.model</a> &gt; <span class="el_source">Produto.java</span></div><h1>Produto.java</h1><pre class="source lang-java linenums">package com.faculdade.produtos.model;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.UUID;
+
+/**
+ * Representa um produto no sistema.
+ * Implementa imutabilidade para prevenir efeitos colaterais.
+ */
+public final class Produto {
+    private final ProdutoId id;
+    private final Nome nome;
+    private final Descricao descricao;
+    private final Preco preco;
+    private final Categoria categoria;
+    private final QuantidadeEstoque quantidadeEstoque;
+    private final LocalDateTime criadoEm;
+    private final LocalDateTime atualizadoEm;
+
+<span class="fc" id="L22">    private Produto(Builder builder) {</span>
+<span class="fc" id="L23">        this.id = builder.id;</span>
+<span class="fc" id="L24">        this.nome = builder.nome;</span>
+<span class="fc" id="L25">        this.descricao = builder.descricao;</span>
+<span class="fc" id="L26">        this.preco = builder.preco;</span>
+<span class="fc" id="L27">        this.categoria = builder.categoria;</span>
+<span class="fc" id="L28">        this.quantidadeEstoque = builder.quantidadeEstoque;</span>
+<span class="fc" id="L29">        this.criadoEm = builder.criadoEm;</span>
+<span class="fc" id="L30">        this.atualizadoEm = builder.atualizadoEm;</span>
+<span class="fc" id="L31">    }</span>
+
+    public static Builder builder() {
+<span class="fc" id="L34">        return new Builder();</span>
+    }
+
+    public static Produto criar(Nome nome, Descricao descricao, Preco preco, 
+                               Categoria categoria, QuantidadeEstoque quantidadeEstoque) {
+<span class="fc" id="L39">        LocalDateTime agora = LocalDateTime.now();</span>
+<span class="fc" id="L40">        return new Builder()</span>
+<span class="fc" id="L41">                .id(ProdutoId.gerar())</span>
+<span class="fc" id="L42">                .nome(nome)</span>
+<span class="fc" id="L43">                .descricao(descricao)</span>
+<span class="fc" id="L44">                .preco(preco)</span>
+<span class="fc" id="L45">                .categoria(categoria)</span>
+<span class="fc" id="L46">                .quantidadeEstoque(quantidadeEstoque)</span>
+<span class="fc" id="L47">                .criadoEm(agora)</span>
+<span class="fc" id="L48">                .atualizadoEm(agora)</span>
+<span class="fc" id="L49">                .build();</span>
+    }
+
+    public Produto atualizar(Nome nome, Descricao descricao, Preco preco, 
+                            Categoria categoria, QuantidadeEstoque quantidadeEstoque) {
+<span class="fc" id="L54">        return new Builder()</span>
+<span class="fc" id="L55">                .id(this.id)</span>
+<span class="fc" id="L56">                .nome(nome)</span>
+<span class="fc" id="L57">                .descricao(descricao)</span>
+<span class="fc" id="L58">                .preco(preco)</span>
+<span class="fc" id="L59">                .categoria(categoria)</span>
+<span class="fc" id="L60">                .quantidadeEstoque(quantidadeEstoque)</span>
+<span class="fc" id="L61">                .criadoEm(this.criadoEm)</span>
+<span class="fc" id="L62">                .atualizadoEm(LocalDateTime.now())</span>
+<span class="fc" id="L63">                .build();</span>
+    }
+
+    public Produto atualizarEstoque(QuantidadeEstoque novaQuantidade) {
+<span class="fc" id="L67">        return new Builder()</span>
+<span class="fc" id="L68">                .id(this.id)</span>
+<span class="fc" id="L69">                .nome(this.nome)</span>
+<span class="fc" id="L70">                .descricao(this.descricao)</span>
+<span class="fc" id="L71">                .preco(this.preco)</span>
+<span class="fc" id="L72">                .categoria(this.categoria)</span>
+<span class="fc" id="L73">                .quantidadeEstoque(novaQuantidade)</span>
+<span class="fc" id="L74">                .criadoEm(this.criadoEm)</span>
+<span class="fc" id="L75">                .atualizadoEm(LocalDateTime.now())</span>
+<span class="fc" id="L76">                .build();</span>
+    }
+
+    // Getters (apenas consulta - CQS)
+<span class="fc" id="L80">    public ProdutoId getId() { return id; }</span>
+<span class="fc" id="L81">    public Nome getNome() { return nome; }</span>
+<span class="fc" id="L82">    public Descricao getDescricao() { return descricao; }</span>
+<span class="fc" id="L83">    public Preco getPreco() { return preco; }</span>
+<span class="fc" id="L84">    public Categoria getCategoria() { return categoria; }</span>
+<span class="fc" id="L85">    public QuantidadeEstoque getQuantidadeEstoque() { return quantidadeEstoque; }</span>
+<span class="fc" id="L86">    public LocalDateTime getCriadoEm() { return criadoEm; }</span>
+<span class="fc" id="L87">    public LocalDateTime getAtualizadoEm() { return atualizadoEm; }</span>
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (this == obj) return true;</span>
+<span class="nc bnc" id="L92" title="All 4 branches missed.">        if (obj == null || getClass() != obj.getClass()) return false;</span>
+<span class="nc" id="L93">        Produto produto = (Produto) obj;</span>
+<span class="nc" id="L94">        return Objects.equals(id, produto.id);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L99">        return Objects.hash(id);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L104">        return &quot;Produto{&quot; +</span>
+                &quot;id=&quot; + id +
+                &quot;, nome=&quot; + nome +
+                &quot;, descricao=&quot; + descricao +
+                &quot;, preco=&quot; + preco +
+                &quot;, categoria=&quot; + categoria +
+                &quot;, quantidadeEstoque=&quot; + quantidadeEstoque +
+                &quot;, criadoEm=&quot; + criadoEm +
+                &quot;, atualizadoEm=&quot; + atualizadoEm +
+                '}';
+    }
+
+    public static final class Builder {
+        private ProdutoId id;
+        private Nome nome;
+        private Descricao descricao;
+        private Preco preco;
+        private Categoria categoria;
+        private QuantidadeEstoque quantidadeEstoque;
+        private LocalDateTime criadoEm;
+        private LocalDateTime atualizadoEm;
+
+        private Builder() {}
+
+        public Builder id(ProdutoId id) {
+<span class="fc" id="L129">            this.id = id;</span>
+<span class="fc" id="L130">            return this;</span>
+        }
+
+        public Builder nome(Nome nome) {
+<span class="fc" id="L134">            this.nome = nome;</span>
+<span class="fc" id="L135">            return this;</span>
+        }
+
+        public Builder descricao(Descricao descricao) {
+<span class="fc" id="L139">            this.descricao = descricao;</span>
+<span class="fc" id="L140">            return this;</span>
+        }
+
+        public Builder preco(Preco preco) {
+<span class="fc" id="L144">            this.preco = preco;</span>
+<span class="fc" id="L145">            return this;</span>
+        }
+
+        public Builder categoria(Categoria categoria) {
+<span class="fc" id="L149">            this.categoria = categoria;</span>
+<span class="fc" id="L150">            return this;</span>
+        }
+
+        public Builder quantidadeEstoque(QuantidadeEstoque quantidadeEstoque) {
+<span class="fc" id="L154">            this.quantidadeEstoque = quantidadeEstoque;</span>
+<span class="fc" id="L155">            return this;</span>
+        }
+
+        public Builder criadoEm(LocalDateTime criadoEm) {
+<span class="fc" id="L159">            this.criadoEm = criadoEm;</span>
+<span class="fc" id="L160">            return this;</span>
+        }
+
+        public Builder atualizadoEm(LocalDateTime atualizadoEm) {
+<span class="fc" id="L164">            this.atualizadoEm = atualizadoEm;</span>
+<span class="fc" id="L165">            return this;</span>
+        }
+
+        public Produto build() {
+<span class="fc" id="L169">            validarCamposObrigatorios();</span>
+<span class="fc" id="L170">            return new Produto(this);</span>
+        }
+
+        private void validarCamposObrigatorios() {
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">            if (id == null) throw new IllegalArgumentException(&quot;ID do produto é obrigatório&quot;);</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">            if (nome == null) throw new IllegalArgumentException(&quot;Nome do produto é obrigatório&quot;);</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">            if (descricao == null) throw new IllegalArgumentException(&quot;Descrição do produto é obrigatória&quot;);</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">            if (preco == null) throw new IllegalArgumentException(&quot;Preço do produto é obrigatório&quot;);</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">            if (categoria == null) throw new IllegalArgumentException(&quot;Categoria do produto é obrigatória&quot;);</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">            if (quantidadeEstoque == null) throw new IllegalArgumentException(&quot;Quantidade em estoque do produto é obrigatória&quot;);</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">            if (criadoEm == null) throw new IllegalArgumentException(&quot;Data de criação do produto é obrigatória&quot;);</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">            if (atualizadoEm == null) throw new IllegalArgumentException(&quot;Data de atualização do produto é obrigatória&quot;);</span>
+<span class="fc" id="L182">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

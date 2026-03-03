@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Preco.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Sistema CRUD de Produtos</a> &gt; <a href="index.source.html" class="el_package">com.faculdade.produtos.model</a> &gt; <span class="el_source">Preco.java</span></div><h1>Preco.java</h1><pre class="source lang-java linenums">package com.faculdade.produtos.model;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Objects;
+
+/*
+    Value object para preço de produto.
+    Garante que o preço é sempre positivo e com precisão adequada.
+*/
+public final class Preco {
+<span class="fc" id="L12">    private static final BigDecimal ZERO = BigDecimal.ZERO;</span>
+    private static final int ESCALA = 2; // Duas casas decimais
+    
+    private final BigDecimal value;
+
+<span class="fc" id="L17">    private Preco(BigDecimal value) {</span>
+<span class="fc" id="L18">        this.value = validarENormalizar(value);</span>
+<span class="fc" id="L19">    }</span>
+    
+    // Construtor interno para operações matemáticas que podem gerar valores negativos
+<span class="nc" id="L22">    private Preco(BigDecimal value, boolean pularValidacao) {</span>
+<span class="nc bnc" id="L23" title="All 2 branches missed.">        if (pularValidacao) {</span>
+<span class="nc" id="L24">            this.value = value.setScale(ESCALA, RoundingMode.HALF_UP);  </span>
+        } else {
+<span class="nc" id="L26">            this.value = validarENormalizar(value);</span>
+        }
+<span class="nc" id="L28">    }</span>
+
+    public static Preco of(BigDecimal value) {
+<span class="fc" id="L31">        return new Preco(value);</span>
+    }
+
+    public static Preco of(double value) {
+<span class="nc" id="L35">        return new Preco(BigDecimal.valueOf(value));</span>
+    }
+
+    public static Preco of(String value) {
+        try {
+<span class="nc" id="L40">            return new Preco(new BigDecimal(value));</span>
+<span class="nc" id="L41">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L42">            throw new IllegalArgumentException(&quot;Formato de preço inválido: &quot; + value, e);</span>
+        }
+    }
+
+    public static Preco zero() {
+<span class="nc" id="L47">        return new Preco(ZERO);</span>
+    }
+
+    private BigDecimal validarENormalizar(BigDecimal value) {
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        if (value == null) {</span>
+<span class="nc" id="L52">            throw new IllegalArgumentException(&quot;Preço não pode ser nulo&quot;);</span>
+        }
+        
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (value.compareTo(ZERO) &lt; 0) {</span>
+<span class="nc" id="L56">            throw new IllegalArgumentException(&quot;Preço não pode ser negativo&quot;);</span>
+        }
+        
+<span class="fc" id="L59">        return value.setScale(ESCALA, RoundingMode.HALF_UP);</span>
+    }
+
+    public BigDecimal getValue() {
+<span class="fc" id="L63">        return value;</span>
+    }
+
+    public boolean ehZero() {
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        return value.compareTo(ZERO) == 0;</span>
+    }
+
+    public Preco somar(Preco outro) {
+<span class="nc" id="L71">        return new Preco(this.value.add(outro.value));</span>
+    }
+
+    public Preco subtrair(Preco outro) {
+<span class="nc" id="L75">        return new Preco(this.value.subtract(outro.value), true);</span>
+    }
+
+    public Preco multiplicar(BigDecimal fator) {
+<span class="nc" id="L79">        return new Preco(this.value.multiply(fator));</span>
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (this == obj) return true;</span>
+<span class="nc bnc" id="L85" title="All 4 branches missed.">        if (obj == null || getClass() != obj.getClass()) return false;</span>
+<span class="nc" id="L86">        Preco preco = (Preco) obj;</span>
+<span class="nc" id="L87">        return Objects.equals(value, preco.value);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L92">        return Objects.hash(value);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L97">        return value.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

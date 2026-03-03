@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProdutoCLI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Sistema CRUD de Produtos</a> &gt; <a href="index.source.html" class="el_package">com.faculdade.produtos.cli</a> &gt; <span class="el_source">ProdutoCLI.java</span></div><h1>ProdutoCLI.java</h1><pre class="source lang-java linenums">package com.faculdade.produtos.cli;
+
+import com.faculdade.produtos.exception.*;
+import com.faculdade.produtos.model.*;
+import com.faculdade.produtos.service.ProdutoService;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Scanner;
+
+/*
+    Interface de linha de comando para o sistema de produtos.
+    Implementa padrão Command para operações do menu.
+*/
+public final class ProdutoCLI {
+    
+    private final ProdutoService produtoService;
+    private final Scanner scanner;
+
+<span class="nc" id="L20">    public ProdutoCLI(ProdutoService produtoService) {</span>
+<span class="nc" id="L21">        this.produtoService = produtoService;</span>
+<span class="nc" id="L22">        this.scanner = new Scanner(System.in);</span>
+<span class="nc" id="L23">    }</span>
+
+    /*
+        Inicia a interface de linha de comando.
+    */
+    public void iniciar() {
+<span class="nc" id="L29">        System.out.println(&quot;=== Sistema de Gerenciamento de Produtos ===&quot;);</span>
+<span class="nc" id="L30">        System.out.println(&quot;Bem-vindo!&quot;);</span>
+        
+<span class="nc" id="L32">        boolean executando = true;</span>
+        
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        while (executando) {</span>
+            try {
+<span class="nc" id="L36">                exibirMenu();</span>
+<span class="nc" id="L37">                int escolha = lerEscolha();</span>
+                
+<span class="nc bnc" id="L39" title="All 11 branches missed.">                switch (escolha) {</span>
+<span class="nc" id="L40">                    case 1: processarCriarProduto(); break;</span>
+<span class="nc" id="L41">                    case 2: processarListarProdutos(); break;</span>
+<span class="nc" id="L42">                    case 3: processarBuscarProduto(); break;</span>
+<span class="nc" id="L43">                    case 4: processarAtualizarProduto(); break;</span>
+<span class="nc" id="L44">                    case 5: processarExcluirProduto(); break;</span>
+<span class="nc" id="L45">                    case 6: processarAtualizarEstoque(); break;</span>
+<span class="nc" id="L46">                    case 7: processarListarPorCategoria(); break;</span>
+<span class="nc" id="L47">                    case 8: processarRelatorioEstoqueBaixo(); break;</span>
+<span class="nc" id="L48">                    case 9: processarEstatisticas(); break;</span>
+                    case 0: 
+<span class="nc" id="L50">                        executando = false;</span>
+<span class="nc" id="L51">                        System.out.println(&quot;Obrigado por usar o sistema!&quot;);</span>
+<span class="nc" id="L52">                        break;</span>
+                    default:
+<span class="nc" id="L54">                        System.out.println(&quot;Opção inválida. Tente novamente.&quot;);</span>
+                }
+                
+<span class="nc" id="L57">            } catch (Exception e) {</span>
+<span class="nc" id="L58">                tratarErro(e);</span>
+<span class="nc" id="L59">            }</span>
+            
+<span class="nc bnc" id="L61" title="All 2 branches missed.">            if (executando) {</span>
+<span class="nc" id="L62">                System.out.println(&quot;\\nPressione Enter para continuar...&quot;);</span>
+<span class="nc" id="L63">                scanner.nextLine();</span>
+            }
+        }
+        
+<span class="nc" id="L67">        scanner.close();</span>
+<span class="nc" id="L68">    }</span>
+
+    private void exibirMenu() {
+<span class="nc" id="L71">        System.out.println();</span>
+<span class="nc" id="L72">        System.out.println(&quot;=== MENU PRINCIPAL ===&quot;);</span>
+<span class="nc" id="L73">        System.out.println(&quot;1. Criar produto&quot;);</span>
+<span class="nc" id="L74">        System.out.println(&quot;2. Listar todos os produtos&quot;);</span>
+<span class="nc" id="L75">        System.out.println(&quot;3. Buscar produto&quot;);</span>
+<span class="nc" id="L76">        System.out.println(&quot;4. Atualizar produto&quot;);</span>
+<span class="nc" id="L77">        System.out.println(&quot;5. Excluir produto&quot;);</span>
+<span class="nc" id="L78">        System.out.println(&quot;6. Gerenciar estoque&quot;);</span>
+<span class="nc" id="L79">        System.out.println(&quot;7. Listar por categoria&quot;);</span>
+<span class="nc" id="L80">        System.out.println(&quot;8. Relatório de estoque baixo&quot;);</span>
+<span class="nc" id="L81">        System.out.println(&quot;9. Estatísticas&quot;);</span>
+<span class="nc" id="L82">        System.out.println(&quot;0. Sair&quot;);</span>
+<span class="nc" id="L83">        System.out.print(&quot;Escolha uma opção: &quot;);</span>
+<span class="nc" id="L84">    }</span>
+
+    private int lerEscolha() {
+        try {
+<span class="nc" id="L88">            int escolha = scanner.nextInt();</span>
+<span class="nc" id="L89">            scanner.nextLine(); // Consume newline</span>
+<span class="nc" id="L90">            return escolha;</span>
+<span class="nc" id="L91">        } catch (Exception e) {</span>
+<span class="nc" id="L92">            scanner.nextLine(); // Clear invalid input</span>
+<span class="nc" id="L93">            return -1;</span>
+        }
+    }
+
+    private void processarCriarProduto() {
+<span class="nc" id="L98">        System.out.println(&quot;\\n=== CRIAR PRODUTO ===&quot;);</span>
+        
+        try {
+<span class="nc" id="L101">            Nome nome = lerNomeProduto();</span>
+<span class="nc" id="L102">            Descricao descricao = lerDescricaoProduto();</span>
+<span class="nc" id="L103">            Preco preco = lerPrecoProduto();</span>
+<span class="nc" id="L104">            Categoria categoria = lerCategoriaProduto();</span>
+<span class="nc" id="L105">            QuantidadeEstoque estoque = lerQuantidadeEstoque();</span>
+            
+<span class="nc" id="L107">            ProdutoId produtoId = produtoService.criarProduto(nome, descricao, preco, categoria, estoque);</span>
+<span class="nc" id="L108">            Produto produto = produtoService.obterProduto(produtoId);</span>
+            
+<span class="nc" id="L110">            System.out.println(&quot;\\n✅ Produto criado com sucesso!&quot;);</span>
+<span class="nc" id="L111">            exibirDetalhesProduto(produto);</span>
+            
+<span class="nc" id="L113">        } catch (ProdutoJaExisteException e) {</span>
+<span class="nc" id="L114">            System.err.println(&quot;❌ Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L115">        } catch (Exception e) {</span>
+<span class="nc" id="L116">            System.err.println(&quot;❌ Erro inesperado ao criar produto: &quot; + e.getMessage());</span>
+<span class="nc" id="L117">            e.printStackTrace();</span>
+<span class="nc" id="L118">        }</span>
+<span class="nc" id="L119">    }</span>
+
+    private void processarListarProdutos() {
+<span class="nc" id="L122">        System.out.println(&quot;\\n=== LISTAR PRODUTOS ===&quot;);</span>
+        
+        try {
+<span class="nc" id="L125">            List&lt;Produto&gt; produtos = produtoService.obterTodosProdutos();</span>
+            
+<span class="nc bnc" id="L127" title="All 2 branches missed.">            if (produtos.isEmpty()) {</span>
+<span class="nc" id="L128">                System.out.println(&quot;Nenhum produto encontrado.&quot;);</span>
+<span class="nc" id="L129">                return;</span>
+            }
+            
+<span class="nc" id="L132">            System.out.println(&quot;Total de produtos: &quot; + produtos.size());</span>
+<span class="nc" id="L133">            System.out.println();</span>
+            
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            for (Produto produto : produtos) {</span>
+<span class="nc" id="L136">                exibirDetalhesProduto(produto);</span>
+<span class="nc" id="L137">                System.out.println(&quot;─&quot;.repeat(50));</span>
+<span class="nc" id="L138">            }</span>
+            
+<span class="nc" id="L140">        } catch (Exception e) {</span>
+<span class="nc" id="L141">            System.err.println(&quot;❌ Erro ao listar produtos: &quot; + e.getMessage());</span>
+<span class="nc" id="L142">        }</span>
+<span class="nc" id="L143">    }</span>
+
+    private void processarBuscarProduto() {
+<span class="nc" id="L146">        System.out.println(&quot;\\n=== BUSCAR PRODUTO ===&quot;);</span>
+<span class="nc" id="L147">        System.out.println(&quot;1. Buscar por ID&quot;);</span>
+<span class="nc" id="L148">        System.out.println(&quot;2. Buscar por nome&quot;);</span>
+<span class="nc" id="L149">        System.out.print(&quot;Escolha o tipo de busca: &quot;);</span>
+        
+        try {
+<span class="nc" id="L152">            int tipoBusca = scanner.nextInt();</span>
+<span class="nc" id="L153">            scanner.nextLine();</span>
+            
+<span class="nc bnc" id="L155" title="All 3 branches missed.">            switch (tipoBusca) {</span>
+                case 1:
+<span class="nc" id="L157">                    buscarPorId();</span>
+<span class="nc" id="L158">                    break;</span>
+                case 2:
+<span class="nc" id="L160">                    buscarPorNome();</span>
+<span class="nc" id="L161">                    break;</span>
+                default:
+<span class="nc" id="L163">                    System.out.println(&quot;Tipo de busca inválido.&quot;);</span>
+            }
+            
+<span class="nc" id="L166">        } catch (Exception e) {</span>
+<span class="nc" id="L167">            scanner.nextLine();</span>
+<span class="nc" id="L168">            System.err.println(&quot;❌ Erro na busca: &quot; + e.getMessage());</span>
+<span class="nc" id="L169">        }</span>
+<span class="nc" id="L170">    }</span>
+
+    private void processarAtualizarProduto() {
+<span class="nc" id="L173">        System.out.println(&quot;\\n=== ATUALIZAR PRODUTO ===&quot;);</span>
+        
+        try {
+<span class="nc" id="L176">            System.out.print(&quot;Digite o ID do produto a atualizar: &quot;);</span>
+<span class="nc" id="L177">            String idTexto = scanner.nextLine();</span>
+<span class="nc" id="L178">            ProdutoId produtoId = ProdutoId.of(idTexto);</span>
+            
+            // Buscar produto existente
+<span class="nc" id="L181">            Produto produtoExistente = produtoService.obterProduto(produtoId);</span>
+            
+<span class="nc" id="L183">            System.out.println(&quot;\\nProduto encontrado:&quot;);</span>
+<span class="nc" id="L184">            exibirDetalhesProduto(produtoExistente);</span>
+            
+<span class="nc" id="L186">            System.out.println(&quot;\\nDigite os novos valores (pressione Enter para manter o valor atual):&quot;);</span>
+            
+<span class="nc" id="L188">            Nome novoNome = lerNomeProdutoOpcional(produtoExistente.getNome());</span>
+<span class="nc" id="L189">            Descricao novaDescricao = lerDescricaoProdutoOpcional(produtoExistente.getDescricao());</span>
+<span class="nc" id="L190">            Preco novoPreco = lerPrecoProdutoOpcional(produtoExistente.getPreco());</span>
+<span class="nc" id="L191">            Categoria novaCategoria = lerCategoriaProdutoOpcional(produtoExistente.getCategoria());</span>
+<span class="nc" id="L192">            QuantidadeEstoque novoEstoque = lerQuantidadeEstoqueOpcional(produtoExistente.getQuantidadeEstoque());</span>
+            
+<span class="nc" id="L194">            produtoService.atualizarProduto(</span>
+                produtoId, novoNome, novaDescricao, novoPreco, novaCategoria, novoEstoque);
+            
+<span class="nc" id="L197">            System.out.println(&quot;\\n✅ Produto atualizado com sucesso!&quot;);</span>
+            // Buscar produto atualizado para exibição
+<span class="nc" id="L199">            Produto produtoAtualizado = produtoService.obterProduto(produtoId);</span>
+<span class="nc" id="L200">            exibirDetalhesProduto(produtoAtualizado);</span>
+            
+<span class="nc" id="L202">        } catch (ProdutoNaoEncontradoException e) {</span>
+<span class="nc" id="L203">            System.err.println(&quot;❌ Produto não encontrado: &quot; + e.getMessage());</span>
+<span class="nc" id="L204">        } catch (Exception e) {</span>
+<span class="nc" id="L205">            System.err.println(&quot;❌ Erro ao atualizar produto: &quot; + e.getMessage());</span>
+<span class="nc" id="L206">        }</span>
+<span class="nc" id="L207">    }</span>
+
+    private void processarExcluirProduto() {
+<span class="nc" id="L210">        System.out.println(&quot;\\n=== EXCLUIR PRODUTO ===&quot;);</span>
+        
+        try {
+<span class="nc" id="L213">            System.out.print(&quot;Digite o ID do produto a excluir: &quot;);</span>
+<span class="nc" id="L214">            String idTexto = scanner.nextLine();</span>
+<span class="nc" id="L215">            ProdutoId produtoId = ProdutoId.of(idTexto);</span>
+            
+            // Buscar e exibir produto antes de excluir
+<span class="nc" id="L218">            Produto produto = produtoService.obterProduto(produtoId);</span>
+            
+<span class="nc" id="L220">            System.out.println(&quot;\\nProduto a ser excluído:&quot;);</span>
+<span class="nc" id="L221">            exibirDetalhesProduto(produto);</span>
+            
+<span class="nc" id="L223">            System.out.print(&quot;\\nTem certeza que deseja excluir este produto? (s/N): &quot;);</span>
+<span class="nc" id="L224">            String confirmacao = scanner.nextLine().toLowerCase();</span>
+            
+<span class="nc bnc" id="L226" title="All 4 branches missed.">            if (&quot;s&quot;.equals(confirmacao) || &quot;sim&quot;.equals(confirmacao)) {</span>
+<span class="nc" id="L227">                produtoService.excluirProduto(produtoId);</span>
+<span class="nc" id="L228">                System.out.println(&quot;\\n✅ Produto excluído com sucesso!&quot;);</span>
+            } else {
+<span class="nc" id="L230">                System.out.println(&quot;\\n❌ Operação cancelada.&quot;);</span>
+            }
+            
+<span class="nc" id="L233">        } catch (ProdutoNaoEncontradoException e) {</span>
+<span class="nc" id="L234">            System.err.println(&quot;❌ Produto não encontrado: &quot; + e.getMessage());</span>
+<span class="nc" id="L235">        } catch (Exception e) {</span>
+<span class="nc" id="L236">            System.err.println(&quot;❌ Erro ao excluir produto: &quot; + e.getMessage());</span>
+<span class="nc" id="L237">        }</span>
+<span class="nc" id="L238">    }</span>
+
+    // Métodos auxiliares para leitura de entrada
+    
+    private Nome lerNomeProduto() {
+<span class="nc" id="L243">        System.out.print(&quot;Nome do produto: &quot;);</span>
+<span class="nc" id="L244">        String nomeTexto = scanner.nextLine();</span>
+<span class="nc" id="L245">        return Nome.of(nomeTexto);</span>
+    }
+    
+    private Nome lerNomeProdutoOpcional(Nome valorAtual) {
+<span class="nc" id="L249">        System.out.printf(&quot;Nome (%s): &quot;, valorAtual.getValue());</span>
+<span class="nc" id="L250">        String entrada = scanner.nextLine().trim();</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">        return entrada.isEmpty() ? valorAtual : Nome.of(entrada);</span>
+    }
+
+    private Descricao lerDescricaoProduto() {
+<span class="nc" id="L255">        System.out.print(&quot;Descrição: &quot;);</span>
+<span class="nc" id="L256">        String descricaoTexto = scanner.nextLine();</span>
+<span class="nc" id="L257">        return Descricao.of(descricaoTexto);</span>
+    }
+    
+    private Descricao lerDescricaoProdutoOpcional(Descricao valorAtual) {
+<span class="nc" id="L261">        System.out.printf(&quot;Descrição (%s): &quot;, valorAtual.getValue());</span>
+<span class="nc" id="L262">        String entrada = scanner.nextLine().trim();</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">        return entrada.isEmpty() ? valorAtual : Descricao.of(entrada);</span>
+    }
+
+    private Preco lerPrecoProduto() {
+        while (true) {
+            try {
+<span class="nc" id="L269">                System.out.print(&quot;Preço: R$ &quot;);</span>
+<span class="nc" id="L270">                BigDecimal precoValor = scanner.nextBigDecimal();</span>
+<span class="nc" id="L271">                scanner.nextLine();</span>
+<span class="nc" id="L272">                return Preco.of(precoValor);</span>
+<span class="nc" id="L273">            } catch (Exception e) {</span>
+<span class="nc" id="L274">                System.err.println(&quot;❌ Preço inválido. Digite um valor numérico válido.&quot;);</span>
+<span class="nc" id="L275">                scanner.nextLine();</span>
+<span class="nc" id="L276">            }</span>
+        }
+    }
+    
+    private Preco lerPrecoProdutoOpcional(Preco valorAtual) {
+        while (true) {
+            try {
+<span class="nc" id="L283">                System.out.printf(&quot;Preço (R$ %s): &quot;, valorAtual.getValue());</span>
+<span class="nc" id="L284">                String entrada = scanner.nextLine().trim();</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">                if (entrada.isEmpty()) {</span>
+<span class="nc" id="L286">                    return valorAtual;</span>
+                }
+<span class="nc" id="L288">                BigDecimal precoValor = new BigDecimal(entrada);</span>
+<span class="nc" id="L289">                return Preco.of(precoValor);</span>
+<span class="nc" id="L290">            } catch (Exception e) {</span>
+<span class="nc" id="L291">                System.err.println(&quot;❌ Preço inválido. Digite um valor numérico válido.&quot;);</span>
+<span class="nc" id="L292">            }</span>
+        }
+    }
+
+    private Categoria lerCategoriaProduto() {
+        while (true) {
+            try {
+<span class="nc" id="L299">                System.out.println(&quot;\\nCategorias disponíveis:&quot;);</span>
+<span class="nc" id="L300">                Categoria[] categorias = Categoria.values();</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">                for (int i = 0; i &lt; categorias.length; i++) {</span>
+<span class="nc" id="L302">                    System.out.printf(&quot;%d. %s\\n&quot;, i + 1, categorias[i].formatarParaExibicao());</span>
+                }
+                
+<span class="nc" id="L305">                System.out.print(&quot;Escolha a categoria (1-&quot; + categorias.length + &quot;): &quot;);</span>
+<span class="nc" id="L306">                int escolha = scanner.nextInt();</span>
+<span class="nc" id="L307">                scanner.nextLine();</span>
+                
+<span class="nc bnc" id="L309" title="All 4 branches missed.">                if (escolha &gt;= 1 &amp;&amp; escolha &lt;= categorias.length) {</span>
+<span class="nc" id="L310">                    return categorias[escolha - 1];</span>
+                }
+                
+<span class="nc" id="L313">                System.err.println(&quot;❌ Categoria inválida. Tente novamente.&quot;);</span>
+                
+<span class="nc" id="L315">            } catch (Exception e) {</span>
+<span class="nc" id="L316">                System.err.println(&quot;❌ Entrada inválida. Digite um número.&quot;);</span>
+<span class="nc" id="L317">                scanner.nextLine();</span>
+<span class="nc" id="L318">            }</span>
+        }
+    }
+    
+    private Categoria lerCategoriaProdutoOpcional(Categoria valorAtual) {
+        while (true) {
+            try {
+<span class="nc" id="L325">                System.out.println(&quot;\\nCategorias disponíveis:&quot;);</span>
+<span class="nc" id="L326">                Categoria[] categorias = Categoria.values();</span>
+<span class="nc bnc" id="L327" title="All 2 branches missed.">                for (int i = 0; i &lt; categorias.length; i++) {</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">                    String marcador = categorias[i].equals(valorAtual) ? &quot; (atual)&quot; : &quot;&quot;;</span>
+<span class="nc" id="L329">                    System.out.printf(&quot;%d. %s%s\\n&quot;, i + 1, categorias[i].formatarParaExibicao(), marcador);</span>
+                }
+                
+<span class="nc" id="L332">                System.out.printf(&quot;Escolha a categoria (1-%d) ou Enter para manter atual: &quot;, categorias.length);</span>
+<span class="nc" id="L333">                String entrada = scanner.nextLine().trim();</span>
+                
+<span class="nc bnc" id="L335" title="All 2 branches missed.">                if (entrada.isEmpty()) {</span>
+<span class="nc" id="L336">                    return valorAtual;</span>
+                }
+                
+<span class="nc" id="L339">                int escolha = Integer.parseInt(entrada);</span>
+<span class="nc bnc" id="L340" title="All 4 branches missed.">                if (escolha &gt;= 1 &amp;&amp; escolha &lt;= categorias.length) {</span>
+<span class="nc" id="L341">                    return categorias[escolha - 1];</span>
+                }
+                
+<span class="nc" id="L344">                System.err.println(&quot;❌ Categoria inválida. Tente novamente.&quot;);</span>
+                
+<span class="nc" id="L346">            } catch (Exception e) {</span>
+<span class="nc" id="L347">                System.err.println(&quot;❌ Entrada inválida. Digite um número ou pressione Enter.&quot;);</span>
+<span class="nc" id="L348">            }</span>
+        }
+    }
+
+    private QuantidadeEstoque lerQuantidadeEstoque() {
+        while (true) {
+            try {
+<span class="nc" id="L355">                System.out.print(&quot;Quantidade em estoque: &quot;);</span>
+<span class="nc" id="L356">                int quantidade = scanner.nextInt();</span>
+<span class="nc" id="L357">                scanner.nextLine();</span>
+<span class="nc" id="L358">                return QuantidadeEstoque.of(quantidade);</span>
+<span class="nc" id="L359">            } catch (Exception e) {</span>
+<span class="nc" id="L360">                System.err.println(&quot;❌ Quantidade inválida. Digite um número válido.&quot;);</span>
+<span class="nc" id="L361">                scanner.nextLine();</span>
+<span class="nc" id="L362">            }</span>
+        }
+    }
+    
+    private QuantidadeEstoque lerQuantidadeEstoqueOpcional(QuantidadeEstoque valorAtual) {
+        while (true) {
+            try {
+<span class="nc" id="L369">                System.out.printf(&quot;Quantidade em estoque (%d): &quot;, valorAtual.getValue());</span>
+<span class="nc" id="L370">                String entrada = scanner.nextLine().trim();</span>
+<span class="nc bnc" id="L371" title="All 2 branches missed.">                if (entrada.isEmpty()) {</span>
+<span class="nc" id="L372">                    return valorAtual;</span>
+                }
+<span class="nc" id="L374">                int quantidade = Integer.parseInt(entrada);</span>
+<span class="nc" id="L375">                return QuantidadeEstoque.of(quantidade);</span>
+<span class="nc" id="L376">            } catch (Exception e) {</span>
+<span class="nc" id="L377">                System.err.println(&quot;❌ Quantidade inválida. Digite um número válido.&quot;);</span>
+<span class="nc" id="L378">            }</span>
+        }
+    }
+
+    // Métodos de exibição e utilidade
+    
+    private void exibirDetalhesProduto(Produto produto) {
+<span class="nc" id="L385">        System.out.printf(&quot;ID: %s\\n&quot;, produto.getId());</span>
+<span class="nc" id="L386">        System.out.printf(&quot;Nome: %s\\n&quot;, produto.getNome());</span>
+<span class="nc" id="L387">        System.out.printf(&quot;Descrição: %s\\n&quot;, produto.getDescricao());</span>
+<span class="nc" id="L388">        System.out.printf(&quot;Preço: R$ %s\\n&quot;, produto.getPreco());</span>
+<span class="nc" id="L389">        System.out.printf(&quot;Categoria: %s\\n&quot;, produto.getCategoria().formatarParaExibicao());</span>
+<span class="nc" id="L390">        System.out.printf(&quot;Estoque: %d unidades\\n&quot;, produto.getQuantidadeEstoque().getValue());</span>
+<span class="nc" id="L391">        System.out.printf(&quot;Criado em: %s\\n&quot;, produto.getCriadoEm());</span>
+<span class="nc" id="L392">        System.out.printf(&quot;Atualizado em: %s\\n&quot;, produto.getAtualizadoEm());</span>
+<span class="nc" id="L393">    }</span>
+
+    private void tratarErro(Exception e) {
+<span class="nc bnc" id="L396" title="All 2 branches missed.">        if (e instanceof ExcecaoProduto) {</span>
+<span class="nc" id="L397">            ExcecaoProduto ep = (ExcecaoProduto) e;</span>
+<span class="nc" id="L398">            System.err.printf(&quot;❌ Erro [%s]: %s\\n&quot;, ep.obterCodigoErro(), e.getMessage());</span>
+<span class="nc" id="L399">        } else {</span>
+<span class="nc" id="L400">            System.err.println(&quot;❌ Erro inesperado: &quot; + e.getMessage());</span>
+<span class="nc" id="L401">            e.printStackTrace();</span>
+        }
+<span class="nc" id="L403">    }</span>
+
+    // Métodos auxiliares para operação de busca
+    
+    private void buscarPorId() {
+        try {
+<span class="nc" id="L409">            System.out.print(&quot;Digite o ID do produto: &quot;);</span>
+<span class="nc" id="L410">            String idTexto = scanner.nextLine();</span>
+<span class="nc" id="L411">            ProdutoId produtoId = ProdutoId.of(idTexto);</span>
+            
+<span class="nc" id="L413">            Produto produto = produtoService.obterProduto(produtoId);</span>
+            
+<span class="nc" id="L415">            System.out.println(&quot;\\nProduto encontrado:&quot;);</span>
+<span class="nc" id="L416">            exibirDetalhesProduto(produto);</span>
+            
+<span class="nc" id="L418">        } catch (ProdutoNaoEncontradoException e) {</span>
+<span class="nc" id="L419">            System.err.println(&quot;❌ Produto não encontrado: &quot; + e.getMessage());</span>
+<span class="nc" id="L420">        } catch (Exception e) {</span>
+<span class="nc" id="L421">            System.err.println(&quot;❌ Erro na busca por ID: &quot; + e.getMessage());</span>
+<span class="nc" id="L422">        }</span>
+<span class="nc" id="L423">    }</span>
+
+    private void buscarPorNome() {
+        try {
+<span class="nc" id="L427">            System.out.print(&quot;Digite o nome do produto: &quot;);</span>
+<span class="nc" id="L428">            String nomeTexto = scanner.nextLine();</span>
+<span class="nc" id="L429">            Nome nome = Nome.of(nomeTexto);</span>
+            
+<span class="nc" id="L431">            Produto produto = produtoService.obterProduto(nome);</span>
+            
+<span class="nc" id="L433">            System.out.println(&quot;\\nProduto encontrado:&quot;);</span>
+<span class="nc" id="L434">            exibirDetalhesProduto(produto);</span>
+            
+<span class="nc" id="L436">        } catch (ProdutoNaoEncontradoException e) {</span>
+<span class="nc" id="L437">            System.err.println(&quot;❌ Produto não encontrado: &quot; + e.getMessage());</span>
+<span class="nc" id="L438">        } catch (Exception e) {</span>
+<span class="nc" id="L439">            System.err.println(&quot;❌ Erro na busca por nome: &quot; + e.getMessage());</span>
+<span class="nc" id="L440">        }</span>
+<span class="nc" id="L441">    }</span>
+
+    private void processarAtualizarEstoque() {
+<span class="nc" id="L444">        System.out.println(&quot;\\n=== GERENCIAR ESTOQUE ===&quot;);</span>
+        
+        // Implementação simplificada - pode ser expandida
+<span class="nc" id="L447">        System.out.println(&quot;Funcionalidade de atualização de estoque será implementada em versão futura.&quot;);</span>
+<span class="nc" id="L448">    }</span>
+
+    private void processarListarPorCategoria() {
+<span class="nc" id="L451">        System.out.println(&quot;\\n=== LISTAR POR CATEGORIA ===&quot;);</span>
+        
+        // Implementação simplificada - pode ser expandida  
+<span class="nc" id="L454">        System.out.println(&quot;Funcionalidade de listagem por categoria será implementada em versão futura.&quot;);</span>
+<span class="nc" id="L455">    }</span>
+
+    private void processarRelatorioEstoqueBaixo() {
+<span class="nc" id="L458">        System.out.println(&quot;\\n=== RELATÓRIO DE ESTOQUE BAIXO ===&quot;);</span>
+        
+        // Implementação simplificada - pode ser expandida
+<span class="nc" id="L461">        System.out.println(&quot;Relatório de estoque baixo será implementado em versão futura.&quot;);</span>
+<span class="nc" id="L462">    }</span>
+
+    private void processarEstatisticas() {
+<span class="nc" id="L465">        System.out.println(&quot;\\n=== ESTATÍSTICAS ===&quot;);</span>
+        
+        try {
+<span class="nc" id="L468">            List&lt;Produto&gt; produtos = produtoService.obterTodosProdutos();</span>
+            
+<span class="nc" id="L470">            System.out.printf(&quot;Total de produtos: %d\\n&quot;, produtos.size());</span>
+            
+            // Implementação simplificada - pode ser expandida com mais estatísticas
+            
+<span class="nc" id="L474">        } catch (Exception e) {</span>
+<span class="nc" id="L475">            System.err.println(&quot;❌ Erro ao obter estatísticas: &quot; + e.getMessage());</span>
+<span class="nc" id="L476">        }</span>
+<span class="nc" id="L477">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QuantidadeEstoque.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Sistema CRUD de Produtos</a> &gt; <a href="index.source.html" class="el_package">com.faculdade.produtos.model</a> &gt; <span class="el_source">QuantidadeEstoque.java</span></div><h1>QuantidadeEstoque.java</h1><pre class="source lang-java linenums">package com.faculdade.produtos.model;
+
+import java.util.Objects;
+
+public final class QuantidadeEstoque {
+    private static final int QUANTIDADE_MINIMA = 0;
+    
+    private final int value;
+
+<span class="fc" id="L10">    private QuantidadeEstoque(int value) {</span>
+<span class="fc" id="L11">        this.value = validar(value);</span>
+<span class="fc" id="L12">    }</span>
+
+    public static QuantidadeEstoque of(int value) {
+<span class="fc" id="L15">        return new QuantidadeEstoque(value);</span>
+    }
+
+    public static QuantidadeEstoque zero() {
+<span class="nc" id="L19">        return new QuantidadeEstoque(QUANTIDADE_MINIMA);</span>
+    }
+
+    private int validar(int value) {
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">        if (value &lt; QUANTIDADE_MINIMA) {</span>
+<span class="nc" id="L24">            throw new IllegalArgumentException(</span>
+<span class="nc" id="L25">                String.format(&quot;Quantidade em estoque não pode ser negativa. Valor informado: %d&quot;, value)</span>
+            );
+        }
+<span class="fc" id="L28">        return value;</span>
+    }
+
+    public int getValue() {
+<span class="fc" id="L32">        return value;</span>
+    }
+
+    public boolean ehZero() {
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        return value == QUANTIDADE_MINIMA;</span>
+    }
+
+    public boolean estaDisponivel() {
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        return value &gt; QUANTIDADE_MINIMA;</span>
+    }
+
+    public QuantidadeEstoque adicionar(int quantidade) {
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (quantidade &lt; 0) {</span>
+<span class="nc" id="L45">            throw new IllegalArgumentException(&quot;Não é possível adicionar quantidade negativa&quot;);</span>
+        }
+<span class="nc" id="L47">        return new QuantidadeEstoque(this.value + quantidade);</span>
+    }
+
+    public QuantidadeEstoque subtrair(int quantidade) {
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (quantidade &lt; 0) {</span>
+<span class="nc" id="L52">            throw new IllegalArgumentException(&quot;Não é possível subtrair quantidade negativa&quot;);</span>
+        }
+<span class="nc" id="L54">        return new QuantidadeEstoque(this.value - quantidade);</span>
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (this == obj) return true;</span>
+<span class="nc bnc" id="L60" title="All 4 branches missed.">        if (obj == null || getClass() != obj.getClass()) return false;</span>
+<span class="nc" id="L61">        QuantidadeEstoque that = (QuantidadeEstoque) obj;</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        return value == that.value;</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L67">        return Objects.hash(value);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L72">        return String.valueOf(value);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
