@@ -40,12 +40,30 @@ public class PedidoController {
         return new PedidoResposta(pedidoService.finalizar(id));
     }
 
+    @GetMapping("/{id}/historico")
+    public List<PedidoHistoricoResposta> historico(@PathVariable Long id) {
+        return pedidoService.listarHistorico(id).stream().map(PedidoHistoricoResposta::new).toList();
+    }
+
     public record NovoPedidoRequest(@NotBlank(message = "A descrição é obrigatória.") String descricao) {
     }
 
     public record PedidoResposta(Long id, String descricao, boolean finalizado) {
         public PedidoResposta(Pedido pedido) {
             this(pedido.getId(), pedido.getDescricao(), pedido.isFinalizado());
+        }
+    }
+
+    public record PedidoHistoricoResposta(Long id, Long pedidoId, String descricao, boolean finalizado, String tipoEvento, String alteradoEm) {
+        public PedidoHistoricoResposta(PedidoHistorico historico) {
+            this(
+                    historico.getId(),
+                    historico.getPedidoId(),
+                    historico.getDescricao(),
+                    historico.isFinalizado(),
+                    historico.getTipoEvento().name(),
+                    historico.getAlteradoEm().toString()
+            );
         }
     }
 }
