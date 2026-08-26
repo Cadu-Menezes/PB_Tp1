@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
 class PedidoServiceTest {
@@ -18,6 +19,9 @@ class PedidoServiceTest {
 
     @Autowired
     private PedidoHistoricoRepository pedidoHistoricoRepository;
+
+    @MockBean
+    private com.cadu.pbtp1.preparo.PedidoPreparoService pedidoPreparoService;
 
     @Test
     void deveCriarPedidoERegistrarHistorico() {

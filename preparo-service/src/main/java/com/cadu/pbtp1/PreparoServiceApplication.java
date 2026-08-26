@@ -2,13 +2,11 @@ package com.cadu.pbtp1;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients
-public class PbTp1Application {
+public class PreparoServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PbTp1Application.class, args);
+        SpringApplication.run(PreparoServiceApplication.class, args);
     }
 }

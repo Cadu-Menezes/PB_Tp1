@@ -14,15 +14,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import com.cadu.pbtp1.preparo.AtualizarStatusPreparoRequest;
+import com.cadu.pbtp1.preparo.PedidoPreparoResposta;
+import com.cadu.pbtp1.preparo.PedidoPreparoService;
+import com.cadu.pbtp1.preparo.StatusPreparo;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/pedidos")
 public class PedidoController {
 
     private final PedidoService pedidoService;
+    private final PedidoPreparoService pedidoPreparoService;
 
-    public PedidoController(PedidoService pedidoService) {
+    public PedidoController(PedidoService pedidoService, PedidoPreparoService pedidoPreparoService) {
         this.pedidoService = pedidoService;
+        this.pedidoPreparoService = pedidoPreparoService;
     }
 
     @GetMapping
@@ -38,6 +45,21 @@ public class PedidoController {
     @PatchMapping("/{id}/finalizar")
     public PedidoResposta finalizar(@PathVariable Long id) {
         return new PedidoResposta(pedidoService.finalizar(id));
+    }
+
+    @GetMapping("/{id}/preparo")
+    public PedidoPreparoResposta obterPreparo(@PathVariable Long id) {
+        return pedidoPreparoService.obter(id);
+    }
+
+    @PatchMapping("/{id}/preparo")
+    public PedidoPreparoResposta atualizarPreparo(@PathVariable Long id, @Valid @RequestBody AtualizarStatusPreparoRequest request) {
+        return pedidoPreparoService.atualizarStatus(id, request.status());
+    }
+
+    @GetMapping("/preparos")
+    public List<PedidoPreparoResposta> listarPreparos() {
+        return pedidoPreparoService.listar();
     }
 
     @GetMapping("/{id}/historico")

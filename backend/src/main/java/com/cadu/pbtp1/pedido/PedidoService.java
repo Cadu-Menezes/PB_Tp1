@@ -8,15 +8,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cadu.pbtp1.preparo.PedidoPreparoService;
+import com.cadu.pbtp1.preparo.StatusPreparo;
+
 @Service
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
     private final PedidoHistoricoRepository pedidoHistoricoRepository;
+    private final PedidoPreparoService pedidoPreparoService;
 
-    public PedidoService(PedidoRepository pedidoRepository, PedidoHistoricoRepository pedidoHistoricoRepository) {
+    public PedidoService(PedidoRepository pedidoRepository, PedidoHistoricoRepository pedidoHistoricoRepository, PedidoPreparoService pedidoPreparoService) {
         this.pedidoRepository = pedidoRepository;
         this.pedidoHistoricoRepository = pedidoHistoricoRepository;
+        this.pedidoPreparoService = pedidoPreparoService;
     }
 
     @Transactional(readOnly = true)
@@ -29,6 +34,7 @@ public class PedidoService {
         Pedido pedido = new Pedido(descricao);
         Pedido pedidoSalvo = pedidoRepository.save(pedido);
         registrarHistorico(pedidoSalvo, PedidoHistorico.TipoEvento.CRIADO);
+        pedidoPreparoService.registrarPedido(pedidoSalvo.getId(), pedidoSalvo.getDescricao());
         return pedidoSalvo;
     }
 
@@ -39,6 +45,7 @@ public class PedidoService {
         pedido.finalizar();
         Pedido pedidoFinalizado = pedidoRepository.save(pedido);
         registrarHistorico(pedidoFinalizado, PedidoHistorico.TipoEvento.FINALIZADO);
+        pedidoPreparoService.atualizarStatus(pedidoFinalizado.getId(), StatusPreparo.ENTREGUE);
         return pedidoFinalizado;
     }
 

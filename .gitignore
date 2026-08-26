@@ -1,4 +1,7 @@
 backend/target/
+backend/data/
+preparo-service/target/
+preparo-service/data/
 frontend/node_modules/
 frontend/dist/
 .idea/
