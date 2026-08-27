@@ -22,6 +22,18 @@ mvn spring-boot:run
 
 O backend sobe em `http://localhost:8081`.
 
+### Acesso ao banco H2 do backend
+
+Console: `http://localhost:8081/h2-console`
+
+- **JDBC URL:** `jdbc:h2:file:C:/Users/Dwith/Desktop/Cadu/PB_Tp1/backend/data/pbtp1db`
+- **Usuário:** `sa`
+- **Senha:** deixe em branco
+
+Tabela principal: `PEDIDOS`
+
+Tabela de histórico: `PEDIDO_HISTORICO`
+
 ## Como rodar o frontend
 
 ```bash
@@ -31,6 +43,16 @@ npm run dev
 ```
 
 O frontend sobe em `http://localhost:5173`.
+
+### Acesso ao banco H2 do microsserviço de preparo
+
+Console: `http://localhost:8082/h2-console`
+
+- **JDBC URL:** `jdbc:h2:file:C:/Users/Dwith/Desktop/Cadu/PB_Tp1/preparo-service/data/preparo-db`
+- **Usuário:** `sa`
+- **Senha:** deixe em branco
+
+Tabela principal: `PEDIDOS_PREPARO`
 
 ## API
 

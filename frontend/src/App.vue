@@ -255,7 +255,7 @@ const statusOpcoes = [
   { titulo: 'Entregue', valor: 'ENTREGUE' }
 ];
 
-const basesApi = ['', 'http://localhost:8081'];
+const basesApi = [''];
 
 const pedidosPendentes = computed(() => pedidos.value.filter((pedido) => !pedido.finalizado));
 
@@ -316,7 +316,7 @@ async function carregarPedidos() {
 }
 
 async function carregarPreparos() {
-  const resposta = await chamarApi('/api/preparos');
+  const resposta = await chamarApi('/api/pedidos/preparos');
 
   if (!resposta.ok) {
     throw new Error('Falha ao carregar o microsserviço de preparo.');
