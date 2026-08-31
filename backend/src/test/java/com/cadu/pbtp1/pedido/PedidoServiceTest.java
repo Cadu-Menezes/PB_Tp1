@@ -23,6 +23,9 @@ class PedidoServiceTest {
     @MockBean
     private com.cadu.pbtp1.preparo.PedidoPreparoService pedidoPreparoService;
 
+    @MockBean
+    private com.cadu.pbtp1.preparo.PedidoEventPublisher pedidoEventPublisher;
+
     @Test
     void deveCriarPedidoERegistrarHistorico() {
         limparDados();

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import com.cadu.pbtp1.preparo.AtualizarStatusPreparoRequest;
 import com.cadu.pbtp1.preparo.PedidoPreparoResposta;
 import com.cadu.pbtp1.preparo.PedidoPreparoService;
+import com.cadu.pbtp1.preparo.PedidoEventPublisher;
 import com.cadu.pbtp1.preparo.StatusPreparo;
 
 @RestController
@@ -26,10 +27,13 @@ public class PedidoController {
 
     private final PedidoService pedidoService;
     private final PedidoPreparoService pedidoPreparoService;
+    private final PedidoEventPublisher pedidoEventPublisher;
 
-    public PedidoController(PedidoService pedidoService, PedidoPreparoService pedidoPreparoService) {
+    public PedidoController(PedidoService pedidoService, PedidoPreparoService pedidoPreparoService,
+                            PedidoEventPublisher pedidoEventPublisher) {
         this.pedidoService = pedidoService;
         this.pedidoPreparoService = pedidoPreparoService;
+        this.pedidoEventPublisher = pedidoEventPublisher;
     }
 
     @GetMapping
@@ -54,7 +58,8 @@ public class PedidoController {
 
     @PatchMapping("/{id}/preparo")
     public PedidoPreparoResposta atualizarPreparo(@PathVariable Long id, @Valid @RequestBody AtualizarStatusPreparoRequest request) {
-        return pedidoPreparoService.atualizarStatus(id, request.status());
+        pedidoEventPublisher.publicarStatusAtualizado(id, request.status());
+        return pedidoPreparoService.obter(id);
     }
 
     @GetMapping("/preparos")
