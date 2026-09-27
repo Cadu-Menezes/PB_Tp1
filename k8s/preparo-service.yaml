@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: preparo-service
+  namespace: pb-tp1
+spec:
+  selector:
+    app: preparo-service
+  ports:
+    - port: 8082
+      targetPort: 8082
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: preparo-service
+  namespace: pb-tp1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: preparo-service
+  template:
+    metadata:
+      labels:
+        app: preparo-service
+    spec:
+      containers:
+        - name: preparo-service
+          image: pb-tp1/preparo-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:h2:file:/app/data/preparo-db
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: RABBITMQ_USERNAME
+              value: guest
+            - name: RABBITMQ_PASSWORD
+              value: guest
+          readinessProbe:
+            tcpSocket:
+              port: 8082
+            initialDelaySeconds: 25
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8082
+            initialDelaySeconds: 45
+            periodSeconds: 15
