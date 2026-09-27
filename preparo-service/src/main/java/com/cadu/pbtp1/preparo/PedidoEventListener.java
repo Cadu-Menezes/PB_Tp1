@@ -46,6 +46,9 @@ public class PedidoEventListener {
                     SERVICE_NAME, evento.eventType(), evento.pedidoId(), evento.status());
         } catch (JsonProcessingException exception) {
             throw new IllegalArgumentException("Evento de pedido inválido.", exception);
+        } catch (RuntimeException exception) {
+            log.error("[{}] Falha ao processar evento | motivo={}", SERVICE_NAME, exception.getMessage(), exception);
+            throw exception;
         }
     }
 }
